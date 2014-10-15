@@ -1,11 +1,11 @@
 Free Music Ninja API
 ====================
 
-.. image:: https://circleci.com/gh/FreeMusicNinja/freemusic.ninja.png?style=badge
-    :target: https://circleci.com/gh/FreeMusicNinja/freemusic.ninja
+.. image:: https://circleci.com/gh/FreeMusicNinja/api.freemusic.ninja.png?style=badge
+    :target: https://circleci.com/gh/FreeMusicNinja/api.freemusic.ninja
 
-.. image:: https://codecov.io/github/FreeMusicNinja/freemusic.ninja/coverage.svg?branch=master
-    :target: https://codecov.io/github/FreeMusicNinja/freemusic.ninja?branch=master
+.. image:: https://codecov.io/github/FreeMusicNinja/api.freemusic.ninja/coverage.svg?branch=master
+    :target: https://codecov.io/github/FreeMusicNinja/api.freemusic.ninja?branch=master
 
 Requirements
 ------------
