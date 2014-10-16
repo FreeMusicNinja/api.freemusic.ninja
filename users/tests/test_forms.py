@@ -49,3 +49,14 @@ class UserCreationFormTest(TestCase):
             'password2': test_password,
         })
         assert form.save(commit=False).pk is None
+
+
+class UserChangeFormTest(TestCase):
+
+    def test_password_initial(self):
+        test_password = "initial password"
+        form = forms.UserChangeForm(instance=User(password=test_password), data={
+            'password': "user entered",
+        })
+        form.is_valid()
+        assert form.cleaned_data['password'] == test_password
