@@ -12,6 +12,8 @@ class UserCreationForm(forms.ModelForm):
     Includes all the required fields, plus a repeated password.
     """
 
+    PASSWORDS_DONT_MATCH = "Passwords don't match"
+
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation',
                                 widget=forms.PasswordInput)
@@ -20,13 +22,12 @@ class UserCreationForm(forms.ModelForm):
         model = User
         fields = ('name', 'email')
 
-    def clean_password2(self):
+    def clean(self):
         """Check that the two passwords match."""
         password1 = self.cleaned_data.get('password1')
         password2 = self.cleaned_data.get('password2')
-        if password1 and password2 and password1 != password2:
-            raise forms.ValidationError("Passwords don't match")
-        return password2
+        if not (password1 and password2) or password1 != password2:
+            raise forms.ValidationError(self.PASSWORDS_DONT_MATCH)
 
     def save(self, commit=True):
         """Save the provided password in hashed format."""
