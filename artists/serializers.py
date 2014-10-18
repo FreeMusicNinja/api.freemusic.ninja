@@ -31,9 +31,7 @@ class SimilaritySerializer(serializers.ModelSerializer):
 class ArtistSerializer(serializers.ModelSerializer):
 
     links = HyperlinkSerializer(read_only=True)
-    similar = SimilaritySerializer(source='usersimilarity_set', read_only=True)
-
 
     class Meta:
         model = Artist
-        fields = ('id', 'name', 'links', 'similar')
+        fields = ('id', 'name', 'links')
