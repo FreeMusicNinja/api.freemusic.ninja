@@ -64,7 +64,7 @@ class UserTest(APITestCase):
         user = User.objects.create(name="Trey", email="trey@example.com")
         url = reverse('user-detail', args=[user.pk])
         self.client.force_authenticate(user=user)
-        response = self.client.post(url, format='json', data={
+        response = self.client.put(url, format='json', data={
             'name': "Bob",
             'email': "bob@example.com",
         })
