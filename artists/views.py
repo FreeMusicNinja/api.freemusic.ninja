@@ -28,8 +28,11 @@ class SimilarViewSet(viewsets.ModelViewSet):
 
     queryset = UserSimilarity.objects.all()
     serializer_class = SimilaritySerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticated,)
     http_method_names = ['get', 'post', 'delete']
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
 
     def pre_save(self, obj):
         artist = get_object_or_404(Artist, pk=self.kwargs['cc_artist_pk'])
