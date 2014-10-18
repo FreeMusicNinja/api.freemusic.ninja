@@ -17,9 +17,8 @@ class UserViewSet(viewsets.ModelViewSet):
                 if self.request.user == self.get_object()
                 else UserSerializer)
 
-    def retrieve(self, request, pk=None):
+    def initial(self, request, *args, **kwargs):
         """Retrieve given user or current user if ``pk`` is "me"."""
-        if pk == 'me' and request.user.is_authenticated():
-            pk = request.user.pk
-            self.kwargs = {'pk': pk}
-        return super().retrieve(request, pk)
+        if self.kwargs['pk'] == 'me' and request.user.is_authenticated():
+            self.kwargs['pk'] = self.request.user.pk
+        super().initial(request, *args, **kwargs)
