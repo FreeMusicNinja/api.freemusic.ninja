@@ -62,9 +62,16 @@ class UserTest(APITestCase):
 
     def test_update_current_user(self):
         user = User.objects.create(name="Trey", email="trey@example.com")
+        self.check_update(user.pk, user)
+
+    def test_update_me(self):
+        user = User.objects.create(name="Trey", email="trey@example.com")
+        self.check_update('me', user)
+
+    def check_update(self, pk, user):
         new_name = "Bob"
         new_email = "bob@example.com"
-        url = reverse('user-detail', args=[user.pk])
+        url = reverse('user-detail', args=[pk])
         self.client.force_authenticate(user=user)
         response = self.client.put(url, format='json', data={
             'name': new_name,
