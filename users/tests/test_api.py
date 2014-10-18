@@ -59,3 +59,18 @@ class UserTest(APITestCase):
             'name': user.name,
             'email': user.email,
         })
+
+    def test_update_current_user(self):
+        user = User.objects.create(name="Trey", email="trey@example.com")
+        url = reverse('user-detail', args=[user.pk])
+        self.client.force_authenticate(user=user)
+        response = self.client.post(url, format='json', data={
+            'name': "Bob",
+            'email': "bob@example.com",
+        })
+        assert response.status_code == status.HTTP_200_OK
+        assert (response.data == {
+            'id': user.id,
+            'name': user.name,
+            'email': user.email,
+        })
