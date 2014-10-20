@@ -1,12 +1,15 @@
 import json
+from datetime import datetime
 from unittest.mock import patch
 
 from django.core.urlresolvers import reverse
+from django.contrib import auth
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from artists.models import Artist
 from echonest.models import SimilarResponse
+from similarities.models import GeneralArtist
 
 
 class ArtistTest(APITestCase):
@@ -52,3 +55,39 @@ class ArtistTest(APITestCase):
             'name': artist.name,
             'links': list(artist.links.all()),
         })
+
+
+class SimilarTest(APITestCase):
+
+    def setUp(self):
+        User = auth.get_user_model()
+        self.user = User.objects.create(name="macro", email="macro@example.com")
+        self.client.force_authenticate(user=self.user)
+        artist_name = "Spoon"
+        self.general_artists = [GeneralArtist.objects.get_or_create(
+            normalized_name=artist_name.upper(), defaults={'name': artist_name})[0]]
+
+    def test_list_similar(self):
+        artist = Artist.objects.create(name="Brad Sucks")
+        similarity = artist.usersimilarity_set.create(user=self.user, other_artist=self.general_artists[0])
+        self.check_retrieve_list(artist, [similarity])
+
+    def test_create_similar(self):
+        artist = Artist.objects.create(name="Brad Sucks")
+        url = reverse('usersimilarity-list', args=[artist.pk])
+        self.client.post(url, data={
+            'other_artist': "Emerald Park"
+        })
+        self.check_retrieve_list(artist, artist.usersimilarity_set.filter(user=self.user))
+
+    def check_retrieve_list(self, artist, similar_instances):
+        url = reverse('usersimilarity-list', args=[artist.pk])
+        response = self.client.get(url, format='json')
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == [{
+            'other_artist': str(similarity.other_artist),
+            'id': similarity.pk,
+            'created': similarity.created,
+            'modified': similarity.modified,
+            'weight': similarity.weight,
+        } for similarity in similar_instances]
