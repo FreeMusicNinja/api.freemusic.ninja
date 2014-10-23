@@ -2,6 +2,7 @@ from django.db import models
 import jsonfield
 from model_utils import Choices
 from model_utils.models import TimeStampedModel
+from simple_history.models import HistoricalRecords
 
 from .managers import ArtistManager
 
@@ -12,6 +13,7 @@ class Artist(TimeStampedModel):
 
     name = models.CharField(max_length=100, unique=True)
     objects = ArtistManager()
+    history = HistoricalRecords()
 
     class Meta:
         ordering = ('name',)
@@ -36,6 +38,7 @@ class Hyperlink(TimeStampedModel):
     artist = models.ForeignKey(Artist, related_name='links')
     name = models.CharField(max_length=50, choices=NAMES)
     url = models.URLField()
+    history = HistoricalRecords()
 
     class Meta:
         ordering = ('order',)
