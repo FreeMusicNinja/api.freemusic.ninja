@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'djangosecure',
     'rest_framework',
     'rest_framework.authtoken',
+    'simple_history',
 
     'artists',
     'echonest',

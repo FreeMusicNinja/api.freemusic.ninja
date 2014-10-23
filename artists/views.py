@@ -20,3 +20,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
         else:
             qs = super().get_queryset()
         return qs[:100]
+
+    def pre_save(self, obj):
+        # set the user making a change for simple_history to track
+        obj._history_user = self.request.user
