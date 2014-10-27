@@ -9,6 +9,16 @@ class UserTest(APITestCase):
 
     """Tests for /users/ API endpoints."""
 
+    def test_list_users_logged_out(self):
+        url = reverse('user-list')
+        response = self.client.get(url, format='json')
+        print(response.data)
+        assert response.status_code == status.HTTP_200_OK
+        assert (response.data == [{
+            'id': 1,
+            'name': "",
+        }])
+
     def test_view_user_logged_out(self):
         user = User.objects.create(name="Trey", email="trey@example.com")
         url = reverse('user-detail', args=[user.pk])
