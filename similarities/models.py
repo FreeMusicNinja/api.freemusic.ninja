@@ -79,7 +79,8 @@ class Similarity(BaseSimilarity):
 def update_similarities(cummulative_similarities):
     for similarity in cummulative_similarities:
         weight = (UserSimilarity.objects
-                  .filter(other_artist=similarity.other_artist)
+                  .filter(other_artist=similarity.other_artist,
+                          cc_artist=similarity.cc_artist)
                   .aggregate(models.Avg('weight')))['weight__avg']
         similarity.weight = weight
         similarity.save()
