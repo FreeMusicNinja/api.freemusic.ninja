@@ -1,3 +1,4 @@
+from django.core.exceptions import ImproperlyConfigured
 from rest_framework import viewsets
 
 from .models import User
@@ -13,12 +14,18 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = (IsUserOrReadOnly,)
 
     def get_serializer_class(self):
-        return (AuthenticatedUserSerializer
-                if self.request.user == self.get_object()
-                else UserSerializer)
+        try:
+            obj = self.get_object()
+        except ImproperlyConfigured:  # assume list view, use non-authenticated
+            pass
+        else:
+            if (self.request.user.is_authenticated()
+                    and obj == self.request.user):
+                return AuthenticatedUserSerializer
+        return UserSerializer
 
     def initial(self, request, *args, **kwargs):
         """Retrieve given user or current user if ``pk`` is "me"."""
-        if self.kwargs['pk'] == 'me' and request.user.is_authenticated():
+        if self.kwargs.get('pk') == 'me' and request.user.is_authenticated():
             self.kwargs['pk'] = self.request.user.pk
         super().initial(request, *args, **kwargs)
