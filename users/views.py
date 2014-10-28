@@ -15,11 +15,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         try:
-            is_user = self.request.user == self.get_object()
+            obj = self.get_object()
         except ImproperlyConfigured:  # assume list view, use non-authenticated
-            is_user = False
-        if is_user:
-            return AuthenticatedUserSerializer
+            pass
+        else:
+            if (self.request.user.is_authenticated()
+                    and obj == self.request.user):
+                return AuthenticatedUserSerializer
         return UserSerializer
 
     def initial(self, request, *args, **kwargs):
