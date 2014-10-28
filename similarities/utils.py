@@ -27,6 +27,7 @@ def add_new_similarities(artist):
     user = User.objects.get(email='echonest')
     artist_names = echonest.get_similar(artist.name)
     cc_artists = Artist.objects.filter(name__in=artist_names)
+    cc_artists = sorted(cc_artists, key=lambda a: artist_names.index(a.name))
     update_similarities(
         make_similarity(user, artist, cc_artist, 1 - index / len(cc_artists))
         for index, cc_artist in enumerate(cc_artists)
