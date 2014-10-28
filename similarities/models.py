@@ -49,7 +49,7 @@ class BaseSimilarity(TimeStampedModel):
 
     cc_artist = models.ForeignKey('artists.Artist', verbose_name="CC artist")
     other_artist = models.ForeignKey(GeneralArtist)
-    weight = models.IntegerField(choices=WEIGHTS, default=0)
+    weight = models.FloatField(choices=WEIGHTS, default=0)
 
 
 class UserSimilarity(BaseSimilarity):
