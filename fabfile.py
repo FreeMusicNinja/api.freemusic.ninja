@@ -5,15 +5,19 @@ env.hosts = [
     '104.131.30.135',
 ]
 env.user = "root"
-env.directory = "/home/django/freemusic.ninja/django"
+env.directory = "/home/django/api.freemusic.ninja"
+env.deploy_path = "/home/django/django_project"
 
 
 def deploy():
     with cd(env.directory):
         run("git pull --rebase")
-        sudo("pip3 install -r requirements.txt", user='django')
+        sudo("pip3 install -r requirements.txt")
         sudo("python3 manage.py collectstatic --noinput", user='django')
         sudo("python3 manage.py migrate --noinput", user='django')
+        run("rm -f {deploy_path}".format(deploy_path=env.deploy_path))
+        run("ln -s {project_path} {deploy_path}".format(
+            project_path=env.directory, deploy_path=env.deploy_path))
         run("service gunicorn restart")
 
 
