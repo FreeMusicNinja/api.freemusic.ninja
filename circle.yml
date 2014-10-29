@@ -11,6 +11,7 @@ deployment:
   master:
     branch: master
     commands:
+      - pyenv local 2.7.8
       - python2 -c "from fabric.api import execute; from fabfile import deploy; execute(deploy, hosts=['104.131.30.135'])"
 
 test:
