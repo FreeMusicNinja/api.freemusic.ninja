@@ -12,7 +12,8 @@ deployment:
     branch: master
     commands:
       - pyenv local 2.7.8
-      - python2 -c "from fabric.api import execute; from fabfile import deploy; execute(deploy, hosts=['104.131.30.135'])"
+      - python2 -m pip install 'fabric>=1.3'
+      - python2 -m fabric
 
 test:
   override:
