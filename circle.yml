@@ -7,6 +7,12 @@ dependencies:
     - pip install -U -r dev-requirements.txt coveralls codecov==1.1.0:
         timeout: 60
 
+deployment:
+  master:
+    branch: master
+    commands:
+      - fab deploy
+
 test:
   override:
     - py.test:
