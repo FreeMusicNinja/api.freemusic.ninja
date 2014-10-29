@@ -176,7 +176,7 @@ class AddNewSimilaritiesTest(TestCase):
         user = User.objects.get()
         artist = GeneralArtist(name="Brad Sucks", normalized_name="BRAD SUCKS")
         artists = [Artist.objects.create(name=n) for n in names]
-        self.make_similarity.side_effect = lambda a, b, c: c
+        self.make_similarity.side_effect = lambda a, b, c, d: c
         self.echonest.get_similar.return_value = names
         utils.add_new_similarities(artist)
         self.echonest.get_similar.assert_called_once_with(artist.name)
@@ -184,4 +184,4 @@ class AddNewSimilaritiesTest(TestCase):
         args = list(self.update_similarities.call_args[0][0])
         assert args == artists
         assert (self.make_similarity.mock_calls ==
-                [call(user, artist, artists[i]) for i in (0, 1)])
+                [call(user, artist, artists[i], 1-i/2) for i in (0, 1)])
