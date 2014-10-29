@@ -11,7 +11,8 @@ deployment:
   master:
     branch: master
     commands:
-      - PYENV_VERSION='2.7.8' fab deploy
+      - deactivate
+      - fab deploy
 
 test:
   override:
