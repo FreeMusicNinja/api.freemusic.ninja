@@ -11,8 +11,7 @@ deployment:
   master:
     branch: master
     commands:
-      - deactivate
-      - fab deploy
+      - deactivate && fab deploy
 
 test:
   override:
