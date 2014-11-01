@@ -6,6 +6,7 @@ omit =
     ./fabfile.py
     ./manage.py
     ./tasks.py
+    wsgi.py
 branch = True
 
 
