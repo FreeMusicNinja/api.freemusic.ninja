@@ -14,7 +14,7 @@ def deploy():
         run("git fetch")
         run("git reset --hard origin/master")
         sudo("pip3 install -r requirements.txt")
-        sudo("python3 manage.py collectstatic --noinput", user='django')
+        sudo("python3 manage.py collectstatic --noinput")
         sudo("python3 manage.py migrate --noinput", user='django')
         run("rm -f {deploy_path}".format(deploy_path=env.deploy_path))
         run("ln -s {project_path} {deploy_path}".format(
