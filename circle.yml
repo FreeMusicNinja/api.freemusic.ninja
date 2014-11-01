@@ -17,7 +17,9 @@ deployment:
 
 test:
   override:
-    - py.test:
+    - coverage run -m py.test:
+        timeout: 60
+    - coverage report:
         timeout: 60
     - coveralls:
         timeout: 60
