@@ -11,6 +11,7 @@ env.deploy_path = "/home/django/django_project"
 
 def deploy():
     with cd(env.directory):
+        run("git fetch")
         run("git reset --hard origin/master")
         sudo("pip3 install -r requirements.txt")
         sudo("python3 manage.py collectstatic --noinput", user='django')
