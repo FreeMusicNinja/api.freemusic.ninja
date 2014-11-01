@@ -1,7 +1,10 @@
 [run]
-include = ./*
-source = .
-branch = 1
+omit =
+    */migrations/*
+    ./fabfile.py
+    ./manage.py
+    ./tasks.py
+branch = True
 
 
 [report]
