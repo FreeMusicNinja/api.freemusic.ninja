@@ -8,4 +8,5 @@ django-model-utils==2.2.0
 djangorestframework==2.4.3
 psycopg2==2.5.4
 purl==1.0
+raven==5.1.1
 requests==2.4.3

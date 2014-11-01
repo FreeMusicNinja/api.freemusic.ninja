@@ -47,6 +47,7 @@ INSTALLED_APPS = (
 
     'corsheaders',
     'djangosecure',
+    'raven.contrib.django.raven_compat',
     'rest_framework',
     'rest_framework.authtoken',
 
@@ -122,3 +123,7 @@ SESSION_COOKIE_HTTPONLY = True
 if USE_SSL:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
+
+RAVEN_CONFIG = {
+    'dsn': os.environ.get('RAVEN_CONFIG_DSN'),
+}
