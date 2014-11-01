@@ -1,5 +1,6 @@
 [run]
-include = ./*
+source =
+    .
 omit =
     */migrations/*
     ./fabfile.py
