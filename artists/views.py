@@ -29,7 +29,7 @@ class SimilarViewSet(viewsets.ModelViewSet):
     queryset = UserSimilarity.objects.all()
     serializer_class = SimilaritySerializer
     permission_classes = (permissions.IsAuthenticated,)
-    http_method_names = ['get', 'post', 'delete']
+    http_method_names = ['get', 'post', 'put', 'delete']
     filter_fields = ['cc_artist']
 
     def get_queryset(self):
