@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     'raven.contrib.django.raven_compat',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_swagger',
 
     'artists',
     'echonest',

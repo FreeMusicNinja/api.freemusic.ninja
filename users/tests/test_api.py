@@ -12,7 +12,6 @@ class UserTest(APITestCase):
     def test_list_users_logged_out(self):
         url = reverse('user-list')
         response = self.client.get(url, format='json')
-        print(response.data)
         assert response.status_code == status.HTTP_200_OK
         assert (response.data == [{
             'id': 1,

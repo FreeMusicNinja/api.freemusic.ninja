@@ -16,5 +16,6 @@ urlpatterns = [
                                namespace='rest_framework')),
     url(r'^api-token-auth/',
         'rest_framework.authtoken.views.obtain_auth_token'),
+    url(r'^docs/', include('rest_framework_swagger.urls')),
     url(r'^admin/', include(admin.site.urls)),
 ]

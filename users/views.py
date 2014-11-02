@@ -12,17 +12,16 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all()
     permission_classes = (IsUserOrReadOnly,)
+    serializer_class = UserSerializer
 
-    def get_serializer_class(self):
-        try:
-            obj = self.get_object()
-        except ImproperlyConfigured:  # assume list view, use non-authenticated
-            pass
+    def get_serializer(self, instance=None, *args, **kwargs):
+        context = self.get_serializer_context()
+        if (self.request.user.is_authenticated()
+                and instance == self.request.user):
+            serializer_class = AuthenticatedUserSerializer
         else:
-            if (self.request.user.is_authenticated()
-                    and obj == self.request.user):
-                return AuthenticatedUserSerializer
-        return UserSerializer
+            serializer_class = self.serializer_class
+        return serializer_class(instance, context=context, *args, **kwargs)
 
     def initial(self, request, *args, **kwargs):
         """Retrieve given user or current user if ``pk`` is "me"."""
