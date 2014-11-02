@@ -19,6 +19,9 @@ class GeneralArtist(TimeStampedModel):
         self.normalized_name = self.name.upper()
         return super().save(**kwargs)
 
+    def __str__(self):
+        return self.name
+
 
 def create_general_artist(instance, created, **kwargs):
     if created:

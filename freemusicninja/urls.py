@@ -1,13 +1,14 @@
 from django.conf.urls import include, url
 from django.contrib import admin
-from rest_framework import routers
+from rest_framework.routers import DefaultRouter
 
-from artists.views import ArtistViewSet
+from artists.views import ArtistViewSet, SimilarViewSet
 from users.views import UserViewSet
 
-router = routers.DefaultRouter()
+router = DefaultRouter()
 router.register(r'artists', ArtistViewSet)
 router.register(r'users', UserViewSet)
+router.register(r'similar', SimilarViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
