@@ -1,3 +1,4 @@
+from django.forms import widgets
 from rest_framework import serializers
 
 from artists.models import Artist, Hyperlink
@@ -15,6 +16,7 @@ class HyperlinkSerializer(serializers.ModelSerializer):
 
 class SimilaritySerializer(serializers.ModelSerializer):
     other_artist = serializers.CharField()
+    cc_artist = serializers.PrimaryKeyRelatedField(widget=widgets.NumberInput())
 
     def validate_other_artist(self, attrs, source):
         name = attrs[source]
@@ -25,7 +27,7 @@ class SimilaritySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserSimilarity
-        exclude = ('cc_artist', 'user')
+        exclude = ('user',)
 
 
 class ArtistSerializer(serializers.ModelSerializer):

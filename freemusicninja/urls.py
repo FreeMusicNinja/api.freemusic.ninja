@@ -1,7 +1,6 @@
 from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
-from rest_framework_nested import routers
 
 from artists.views import ArtistViewSet, SimilarViewSet
 from users.views import UserViewSet
@@ -9,13 +8,10 @@ from users.views import UserViewSet
 router = DefaultRouter()
 router.register(r'artists', ArtistViewSet)
 router.register(r'users', UserViewSet)
-
-artist_router = routers.NestedSimpleRouter(router, r'artists', lookup='cc_artist')
-artist_router.register(r'similar', SimilarViewSet)
+router.register(r'similar', SimilarViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'^', include(artist_router.urls)),
     url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
     url(r'^api-token-auth/',

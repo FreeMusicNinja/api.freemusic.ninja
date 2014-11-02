@@ -81,11 +81,12 @@ class SimilarTest(APITestCase):
         self.check_retrieve_list(artist, artist.usersimilarity_set.filter(user=self.user))
 
     def check_retrieve_list(self, artist, similar_instances):
-        url = reverse('usersimilarity-list', args=[artist.pk])
+        url = reverse('usersimilarity-list')
         response = self.client.get(url, format='json')
         assert response.status_code == status.HTTP_200_OK
         assert response.data == [{
             'other_artist': str(similarity.other_artist),
+            'cc_artist': artist.pk,
             'id': similarity.pk,
             'created': similarity.created,
             'modified': similarity.modified,
