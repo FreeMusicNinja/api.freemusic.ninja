@@ -18,4 +18,4 @@ class SimilarResponse(TimeStampedModel):
 
     @property
     def artist_names(self):
-        return [a['name'] for a in self.response['response']['artists']]
+        return [a['name'] for a in self.response['response'].get('artists', [])]
