@@ -27,3 +27,12 @@ class SimilarResponseModelTest(TestCase):
         response = {'response': {'artists': [{'name': "Brad Sucks"}]}}
         similar_response = SimilarResponse(response=json.dumps(response))
         assert similar_response.artist_names == ["Brad Sucks"]
+
+    def test_no_artist_names(self):
+        response = {'response': {'status': {
+            'code': 5,
+            'message': 'The Identifier specified does not exist: thom york',
+            'version': '4.2',
+        }}}
+        similar_response = SimilarResponse(response=json.dumps(response))
+        assert similar_response.artist_names == []
