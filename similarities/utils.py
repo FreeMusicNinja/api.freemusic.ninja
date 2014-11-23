@@ -35,6 +35,7 @@ def add_new_similarities(artist):
 
 
 def get_similar(name):
+    name = name.strip()
     artist, _ = GeneralArtist.objects.get_or_create(
         normalized_name=name.upper(), defaults={'name': name})
     if not has_similarities(artist):

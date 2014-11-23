@@ -91,6 +91,14 @@ class GetSimilarTest(DjangoTestCase):
         artists = utils.get_similar(self.name)
         self.assertSequenceEqual(artists, [self.cc_artist])
 
+    def test_leading_whitespace(self):
+        """Test has_similarities strips whitespace."""
+        name = " Hussalonia"
+        self.has_similarities.return_value = False
+        utils.get_similar(name)
+        general_artist = GeneralArtist.objects.latest('pk')
+        assert general_artist.name == name.strip()
+
     def test_zero_weight(self):
         name = "Tom Waits"
         other_artist = GeneralArtist.objects.create(name=name)
