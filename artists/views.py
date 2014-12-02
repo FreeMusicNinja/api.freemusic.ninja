@@ -3,7 +3,7 @@ from rest_framework import permissions, viewsets
 
 from similarities.utils import get_similar
 from .models import Artist
-from similarities.models import UserSimilarity
+from similarities.models import UserSimilarity, Similarity, update_similarities
 from .serializers import ArtistSerializer, SimilaritySerializer
 
 
@@ -37,3 +37,10 @@ class SimilarViewSet(viewsets.ModelViewSet):
 
     def pre_save(self, obj):
         obj.user = self.request.user
+
+    def post_save(self, obj, created=False):
+        cumulative_similarity, _ = Similarity.objects.get_or_create(
+            other_artist=obj.other_artist,
+            cc_artist=obj.cc_artist,
+        )
+        update_similarities([cumulative_similarity])
