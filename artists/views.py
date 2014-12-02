@@ -39,6 +39,7 @@ class SimilarViewSet(viewsets.ModelViewSet):
         obj.user = self.request.user
 
     def post_save(self, obj, created=False):
+        # TODO re-update old cumulative similarity if artist name changed
         cumulative_similarity, _ = Similarity.objects.get_or_create(
             other_artist=obj.other_artist,
             cc_artist=obj.cc_artist,
