@@ -5,6 +5,7 @@ from similarities.utils import get_similar
 from .models import Artist
 from similarities.models import UserSimilarity
 from .serializers import ArtistSerializer, SimilaritySerializer
+from bandcamp import tasks as bandcamp_tasks
 
 
 class ArtistViewSet(viewsets.ModelViewSet):
@@ -19,6 +20,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
         name = self.request.GET.get('name', "")
         if name:
             qs = get_similar(name)
+            bandcamp_tasks.check_for_cc.delay(name)
         else:
             qs = super().get_queryset()
         return qs[:100]

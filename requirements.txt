@@ -1,3 +1,5 @@
+celery==3.1.17
+cssselect==0.9.1
 Django==1.7.1
 django-secure==1.0.1
 dj-database-url==0.3.0
@@ -6,6 +8,9 @@ django-filter==0.8
 django-jsonfield==0.9.13
 django-model-utils==2.2.0
 djangorestframework==2.4.3
+git+git://github.com/macro1/iron_celery.git@py3#egg=iron-celery
+git+git://github.com/brettatoms/iron_mq_python.git#egg=iron-mq
+lxml==3.4.1
 psycopg2==2.5.4
 purl==1.0
 raven==5.1.1
