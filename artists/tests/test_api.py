@@ -74,10 +74,11 @@ class SimilarTest(APITestCase):
 
     def test_create_similar(self):
         artist = Artist.objects.create(name="Brad Sucks")
-        url = reverse('usersimilarity-list', args=[artist.pk])
-        self.client.post(url, data={
-            'other_artist': "Emerald Park"
-        })
+        url = reverse('usersimilarity-list')
+        assert self.client.post(url, data={
+            'cc_artist': artist.pk,
+            'other_artist': "Emerald Park",
+        }, format="json").status_code == status.HTTP_201_CREATED
         self.check_retrieve_list(artist, artist.usersimilarity_set.filter(user=self.user))
 
     def check_retrieve_list(self, artist, similar_instances):
