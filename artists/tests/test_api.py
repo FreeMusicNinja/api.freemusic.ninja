@@ -1,5 +1,4 @@
 import json
-from datetime import datetime
 from unittest.mock import patch
 
 from django.core.urlresolvers import reverse
@@ -9,7 +8,7 @@ from rest_framework.test import APITestCase
 
 from artists.models import Artist
 from echonest.models import SimilarResponse
-from similarities.models import GeneralArtist
+from similarities.models import GeneralArtist, Similarity
 
 
 class ArtistTest(APITestCase):
@@ -93,3 +92,22 @@ class SimilarTest(APITestCase):
             'modified': similarity.modified,
             'weight': similarity.weight,
         } for similarity in similar_instances]
+
+    def test_create_base_similarity(self):
+        """Test Similarity model is created if one doesn't exist."""
+        weight = 3
+        other_artist = GeneralArtist.objects.create(
+            name="Harvey Danger")
+        cc_artist = Artist.objects.create(name="Brad Sucks")
+        url = reverse('usersimilarity-list')
+        response = self.client.post(url, data={
+            'cc_artist': cc_artist.pk,
+            'other_artist': "Harvey Danger",
+            'weight': weight,
+        }, format="json")
+        assert response.status_code == status.HTTP_201_CREATED
+        similarity = Similarity.objects.get(
+            other_artist=other_artist)
+        assert similarity.cc_artist == cc_artist
+        assert similarity.other_artist == other_artist
+        assert similarity.weight == weight
