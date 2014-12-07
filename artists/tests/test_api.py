@@ -8,7 +8,7 @@ from rest_framework.test import APITestCase
 
 from artists.models import Artist
 from echonest.models import SimilarResponse
-from similarities.models import GeneralArtist, Similarity
+from similarities.models import GeneralArtist, Similarity, UserSimilarity
 
 
 class ArtistTest(APITestCase):
@@ -106,6 +106,31 @@ class SimilarTest(APITestCase):
             'weight': weight,
         }, format="json")
         assert response.status_code == status.HTTP_201_CREATED
+        similarity = Similarity.objects.get(
+            other_artist=other_artist)
+        assert similarity.cc_artist == cc_artist
+        assert similarity.other_artist == other_artist
+        assert similarity.weight == weight
+
+    def test_update_user_similarity(self):
+        """Test updating already existing UserSimilarity model."""
+        weight = 3
+        other_artist = GeneralArtist.objects.create(
+            name="Harvey Danger")
+        cc_artist = Artist.objects.create(name="Brad Sucks")
+        similarity = UserSimilarity.objects.create(
+            cc_artist=cc_artist,
+            other_artist=other_artist,
+            user=self.user,
+            weight=4,
+        )
+        url = reverse('usersimilarity-detail', args=[similarity.pk])
+        response = self.client.put(url, data={
+            'cc_artist': cc_artist.pk,
+            'other_artist': "Harvey Danger",
+            'weight': weight,
+        }, format="json")
+        assert response.status_code == status.HTTP_200_OK
         similarity = Similarity.objects.get(
             other_artist=other_artist)
         assert similarity.cc_artist == cc_artist
