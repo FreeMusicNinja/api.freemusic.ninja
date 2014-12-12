@@ -42,19 +42,3 @@ class SimilarViewSet(viewsets.ModelViewSet):
             instance = self.get_queryset().model()
         instance.user = self.request.user
         return super().get_serializer(instance, *args, **kwargs)
-
-    def perform_save(self, serializer):
-        obj = serializer.save()
-        self.update_related(obj)
-
-    def update_related(self, instance):
-        # TODO re-update old cumulative similarity if artist name changed
-        cumulative_similarity, _ = Similarity.objects.get_or_create(
-            other_artist=instance.other_artist,
-            cc_artist=instance.cc_artist,
-        )
-        update_similarities([cumulative_similarity])
-
-    perform_create = perform_save
-    perform_update = perform_save
-    perform_destroy = update_related

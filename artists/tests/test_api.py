@@ -149,3 +149,28 @@ class SimilarTest(APITestCase):
         assert similarity.cc_artist == cc_artist
         assert similarity.other_artist == other_artist
         assert similarity.weight == weight
+
+    def test_update_user_similarity_other_artist(self):
+        """Test updating already existing UserSimilarity model."""
+        weight = 3
+        old_name = "Harvey Dangr"
+        new_name = "Harvey Danger"
+        cc_artist = Artist.objects.create(name="Brad Sucks")
+        self.client.post(reverse('usersimilarity-list'), data={
+            'cc_artist': cc_artist.pk,
+            'other_artist': old_name,
+            'weight': 2,
+        }, format="json")
+        url = reverse('usersimilarity-detail', args=[UserSimilarity.objects.get(other_artist__name=old_name).pk])
+        response = self.client.put(url, data={
+            'cc_artist': cc_artist.pk,
+            'other_artist': new_name,
+            'weight': weight,
+        }, format="json")
+        assert response.status_code == status.HTTP_200_OK
+        old_similarity = Similarity.objects.get(other_artist__name=old_name)
+        new_similarity = Similarity.objects.get(other_artist__name=new_name)
+        assert new_similarity.cc_artist == cc_artist
+        assert new_similarity.other_artist != old_similarity.other_artist
+        assert new_similarity.weight == weight
+        assert old_similarity.weight == 0
