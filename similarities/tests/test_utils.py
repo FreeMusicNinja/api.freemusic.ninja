@@ -43,7 +43,7 @@ class MakeSimilarityTest(DjangoTestCase):
         user_similarity = UserSimilarity.objects.get()
         assert similarity.other_artist == other_artist
         assert similarity.cc_artist == cc_artist
-        assert similarity.weight == 5
+        assert similarity.weight == 1
         assert user_similarity.other_artist == other_artist
         assert user_similarity.cc_artist == cc_artist
         assert user_similarity.weight == 1
@@ -58,7 +58,7 @@ class MakeSimilarityTest(DjangoTestCase):
         user_similarity = UserSimilarity.objects.get()
         assert similarity.other_artist == other_artist
         assert similarity.cc_artist == cc_artist
-        assert similarity.weight == 0
+        assert similarity.weight == 1
         assert user_similarity.other_artist == other_artist
         assert user_similarity.cc_artist == cc_artist
         assert user_similarity.weight == 1

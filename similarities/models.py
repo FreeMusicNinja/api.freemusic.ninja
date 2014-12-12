@@ -67,6 +67,27 @@ class UserSimilarity(BaseSimilarity):
             ('user', 'cc_artist', 'other_artist'),
         )
 
+    def save(self, *args, **kwargs):
+        similarities_to_update = []
+        if self.pk:
+            prev_other_artist = type(self).objects.get(pk=self.pk).other_artist
+        else:
+            prev_other_artist = None
+        super().save(*args, **kwargs)
+        if self.other_artist:
+            cumulative_similarity, _ = Similarity.objects.get_or_create(
+                other_artist=self.other_artist,
+                cc_artist=self.cc_artist,
+            )
+            similarities_to_update.append(cumulative_similarity)
+        if prev_other_artist and self.other_artist != prev_other_artist:
+            old_cumulative_similarity, _ = Similarity.objects.get_or_create(
+                other_artist=prev_other_artist,
+                cc_artist=self.cc_artist,
+            )
+            similarities_to_update.append(old_cumulative_similarity)
+        update_similarities(similarities_to_update)
+
 
 class Similarity(BaseSimilarity):
 
@@ -84,6 +105,6 @@ def update_similarities(cummulative_similarities):
         weight = (UserSimilarity.objects
                   .filter(other_artist=similarity.other_artist,
                           cc_artist=similarity.cc_artist)
-                  .aggregate(models.Avg('weight')))['weight__avg']
+                  .aggregate(models.Avg('weight')))['weight__avg'] or 0
         similarity.weight = weight
         similarity.save()

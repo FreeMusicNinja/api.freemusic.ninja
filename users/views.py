@@ -16,7 +16,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         try:
             obj = self.get_object()
-        except ImproperlyConfigured:  # assume list view, use non-authenticated
+        except AssertionError:  # assume list view, use non-authenticated
             pass
         else:
             if (self.request.user.is_authenticated()
