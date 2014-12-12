@@ -80,18 +80,31 @@ class SimilarTest(APITestCase):
         }, format="json").status_code == status.HTTP_201_CREATED
         self.check_retrieve_list(artist, artist.usersimilarity_set.filter(user=self.user))
 
+    def test_create_another_similar(self):
+        artist = Artist.objects.create(name="Brad Sucks")
+        url = reverse('usersimilarity-list')
+        assert self.client.post(url, data={
+            'cc_artist': artist.pk,
+            'other_artist': "Emerald Park",
+        }, format="json").status_code == status.HTTP_201_CREATED
+        assert self.client.post(url, data={
+            'cc_artist': artist.pk,
+            'other_artist': "Emerald Park",
+        }, format="json").status_code == status.HTTP_400_BAD_REQUEST
+        self.check_retrieve_list(artist, artist.usersimilarity_set.filter(user=self.user))
+
     def check_retrieve_list(self, artist, similar_instances):
         url = reverse('usersimilarity-list')
         response = self.client.get(url, format='json')
         assert response.status_code == status.HTTP_200_OK
-        assert response.data == [{
+        self.assertCountEqual(response.data, [{
             'other_artist': str(similarity.other_artist),
             'cc_artist': artist.pk,
             'id': similarity.pk,
             'created': similarity.created,
             'modified': similarity.modified,
             'weight': similarity.weight,
-        } for similarity in similar_instances]
+        } for similarity in similar_instances])
 
     def test_create_base_similarity(self):
         """Test Similarity model is created if one doesn't exist."""
