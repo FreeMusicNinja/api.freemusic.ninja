@@ -88,7 +88,7 @@ class SimilarTest(APITestCase):
             'other_artist': str(similarity.other_artist),
             'cc_artist': artist.pk,
             'id': similarity.pk,
-            'created': similarity.created,
-            'modified': similarity.modified,
+            'created': similarity.created.isoformat(),
+            'modified': similarity.modified.isoformat(),
             'weight': similarity.weight,
         } for similarity in similar_instances]
