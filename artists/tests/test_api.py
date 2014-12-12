@@ -1,5 +1,4 @@
 import json
-from datetime import datetime
 from unittest.mock import patch
 
 from django.core.urlresolvers import reverse
@@ -9,7 +8,7 @@ from rest_framework.test import APITestCase
 
 from artists.models import Artist
 from echonest.models import SimilarResponse
-from similarities.models import GeneralArtist
+from similarities.models import GeneralArtist, Similarity, UserSimilarity
 
 
 class ArtistTest(APITestCase):
@@ -74,21 +73,79 @@ class SimilarTest(APITestCase):
 
     def test_create_similar(self):
         artist = Artist.objects.create(name="Brad Sucks")
-        url = reverse('usersimilarity-list', args=[artist.pk])
-        self.client.post(url, data={
-            'other_artist': "Emerald Park"
-        })
+        url = reverse('usersimilarity-list')
+        assert self.client.post(url, data={
+            'cc_artist': artist.pk,
+            'other_artist': "Emerald Park",
+        }, format="json").status_code == status.HTTP_201_CREATED
+        self.check_retrieve_list(artist, artist.usersimilarity_set.filter(user=self.user))
+
+    def test_create_another_similar(self):
+        artist = Artist.objects.create(name="Brad Sucks")
+        url = reverse('usersimilarity-list')
+        assert self.client.post(url, data={
+            'cc_artist': artist.pk,
+            'other_artist': "Emerald Park",
+        }, format="json").status_code == status.HTTP_201_CREATED
+        assert self.client.post(url, data={
+            'cc_artist': artist.pk,
+            'other_artist': "Emerald Park",
+        }, format="json").status_code == status.HTTP_400_BAD_REQUEST
         self.check_retrieve_list(artist, artist.usersimilarity_set.filter(user=self.user))
 
     def check_retrieve_list(self, artist, similar_instances):
         url = reverse('usersimilarity-list')
         response = self.client.get(url, format='json')
         assert response.status_code == status.HTTP_200_OK
-        assert response.data == [{
+        self.assertCountEqual(response.data, [{
             'other_artist': str(similarity.other_artist),
             'cc_artist': artist.pk,
             'id': similarity.pk,
             'created': similarity.created.isoformat(),
             'modified': similarity.modified.isoformat(),
             'weight': similarity.weight,
-        } for similarity in similar_instances]
+        } for similarity in similar_instances])
+
+    def test_create_base_similarity(self):
+        """Test Similarity model is created if one doesn't exist."""
+        weight = 3
+        other_artist = GeneralArtist.objects.create(
+            name="Harvey Danger")
+        cc_artist = Artist.objects.create(name="Brad Sucks")
+        url = reverse('usersimilarity-list')
+        response = self.client.post(url, data={
+            'cc_artist': cc_artist.pk,
+            'other_artist': "Harvey Danger",
+            'weight': weight,
+        }, format="json")
+        assert response.status_code == status.HTTP_201_CREATED
+        similarity = Similarity.objects.get(
+            other_artist=other_artist)
+        assert similarity.cc_artist == cc_artist
+        assert similarity.other_artist == other_artist
+        assert similarity.weight == weight
+
+    def test_update_user_similarity(self):
+        """Test updating already existing UserSimilarity model."""
+        weight = 3
+        other_artist = GeneralArtist.objects.create(
+            name="Harvey Danger")
+        cc_artist = Artist.objects.create(name="Brad Sucks")
+        similarity = UserSimilarity.objects.create(
+            cc_artist=cc_artist,
+            other_artist=other_artist,
+            user=self.user,
+            weight=4,
+        )
+        url = reverse('usersimilarity-detail', args=[similarity.pk])
+        response = self.client.put(url, data={
+            'cc_artist': cc_artist.pk,
+            'other_artist': "Harvey Danger",
+            'weight': weight,
+        }, format="json")
+        assert response.status_code == status.HTTP_200_OK
+        similarity = Similarity.objects.get(
+            other_artist=other_artist)
+        assert similarity.cc_artist == cc_artist
+        assert similarity.other_artist == other_artist
+        assert similarity.weight == weight
