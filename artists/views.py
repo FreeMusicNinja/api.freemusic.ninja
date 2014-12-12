@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.http import Http404
 from rest_framework import permissions, viewsets
 
 from similarities.utils import get_similar
@@ -35,13 +35,26 @@ class SimilarViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
 
-    def pre_save(self, obj):
-        obj.user = self.request.user
+    def get_serializer(self, instance=None, *args, **kwargs):
+        try:
+            instance = instance or self.get_object()
+        except (Http404, AssertionError):
+            instance = self.get_queryset().model()
+        instance.user = self.request.user
+        return super().get_serializer(instance, *args, **kwargs)
 
-    def post_save(self, obj, created=False):
+    def perform_save(self, serializer):
+        obj = serializer.save()
+        self.update_related(obj)
+
+    def update_related(self, instance):
         # TODO re-update old cumulative similarity if artist name changed
         cumulative_similarity, _ = Similarity.objects.get_or_create(
-            other_artist=obj.other_artist,
-            cc_artist=obj.cc_artist,
+            other_artist=instance.other_artist,
+            cc_artist=instance.cc_artist,
         )
         update_similarities([cumulative_similarity])
+
+    perform_create = perform_save
+    perform_update = perform_save
+    perform_destroy = update_related
