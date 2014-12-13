@@ -1,10 +1,17 @@
 from django.db import models
 
 
+class Artist(models.Model):
+    name = models.CharField(max_length=255, null=True)
+    url = models.URLField(unique=True)
+    location = models.CharField(max_length=255, null=True)
+
+
 class Album(models.Model):
     title = models.CharField(max_length=255, null=True)
-    url = models.URLField()
-    art = models.URLField()
+    artist = models.ForeignKey(Artist, null=True)
+    url = models.URLField(unique=True)
+    art = models.URLField(null=True)
     release_date = models.DateField(blank=True, null=True)
     license = models.CharField(max_length=255, blank=True, null=True)
     as_of = models.DateTimeField(auto_now=True)

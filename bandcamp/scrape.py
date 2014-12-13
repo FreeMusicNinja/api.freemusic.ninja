@@ -5,7 +5,6 @@ from lxml import html
 from . import SEARCH_URL, pages, models
 
 BAND_RESULT_URL_SELECTOR = ".searchresult.band .itemurl"
-BAND_PAGE_ALBUM_SELECTOR = ".leftMiddleColumns li a"
 
 
 def search_for_band_page(artist_name):
@@ -17,20 +16,27 @@ def search_for_band_page(artist_name):
     return band_url.decode('unicode_escape').strip()
 
 
-def get_album_urls_from_band(band_page_url):
-    response = requests.get(band_page_url)
-    tree = html.fromstring(response.text)
-    anchor_elements = tree.cssselect(BAND_PAGE_ALBUM_SELECTOR)
-    return [a.get("href") for a in anchor_elements]
-
-
-def album_info(album_page_url):
-    album, created = models.Album.objects.get_or_create(url=album_page_url)
+def band_info(band_page_url):
+    band, created = models.Artist.objects.get_or_create(url=band_page_url)
+    band_page = pages.Band(band_page_url)
+    band_page.populate()
     if not created:
+        return band, band_page
+    band.name = band_page.get_name()
+    band.location = band_page.get_location()
+    band.url = band_page_url
+    band.save()
+    return band, band_page
+
+
+def album_info(band, album_page_url):
+    if models.Album.objects.filter(url=album_page_url).exists():
         return
+    album = models.Album(url=album_page_url)
     album_page = pages.Album(album_page_url)
     album_page.populate()
     album.title = album_page.get_title()
+    album.artist = band
     album.art = album_page.get_art()
     album.license = album_page.get_license()
     album.save()

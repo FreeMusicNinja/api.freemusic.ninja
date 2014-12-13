@@ -1,9 +1,11 @@
 from lxml import html
 import requests
 
+
 def text_tostring(element):
     text_string = html.tostring(element, method="text")
     return text_string.decode('unicode_escape').strip()
+
 
 class Page(object):
     url = None
@@ -26,6 +28,19 @@ class Page(object):
 
     def text_by_selector(self, element_id):
         return text_tostring(self.tree.cssselect(element_id)[0])
+
+
+class Band(Page):
+
+    def get_name(self):
+        return self.text_by_selector("#band-name-location .title")
+
+    def get_location(self):
+        return self.text_by_selector("#band-name-location .location")
+
+    def get_album_urls(self):
+        anchor_elements = self.tree.cssselect(".leftMiddleColumns li a")
+        return [a.get("href") for a in anchor_elements]
 
 
 class Album(Page):
