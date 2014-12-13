@@ -1,10 +1,11 @@
 import os
 import pytest
-import httpretty
+import responses
 
 from .. import models, tasks
 
-FIXTURE_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "fixtures"))
+MODULE_PATH = os.path.dirname(__file__)
+FIXTURE_PATH = os.path.abspath(os.path.join(MODULE_PATH, "..", "fixtures"))
 
 
 def load_fixture(filename):
@@ -14,25 +15,23 @@ def load_fixture(filename):
 
 
 @pytest.mark.django_db
-@httpretty.activate
+@responses.activate
 def test_bandcamp_cc_check():
     band_url = "http://bradsucks.bandcamp.com"
     album1_url = "http://bradsucks.bandcamp.com/album/guess-whos-a-mess"
-    httpretty.register_uri(httpretty.GET, "http://bandcamp.com/search?q=Brad+Sucks",
-                           body=load_fixture("search_results.html"),
-                           content_type="text/html")
-    httpretty.register_uri(httpretty.GET, band_url,
-                           body=load_fixture("band_page.html"),
-                           content_type="text/html")
-    httpretty.register_uri(httpretty.GET, album1_url,
-                           body=load_fixture("album_page1.html"),
-                           content_type="text/html")
-    httpretty.register_uri(httpretty.GET, "http://bradsucks.bandcamp.com/album/out-of-it",
-                           body=load_fixture("album_page2.html"),
-                           content_type="text/html")
-    httpretty.register_uri(httpretty.GET, "http://bradsucks.bandcamp.com/album/i-dont-know-what-im-doing",
-                           body=load_fixture("album_page3.html"),
-                           content_type="text/html")
+    responses.add(responses.GET, "http://bandcamp.com/search?q=Brad+Sucks",
+                  body=load_fixture("search_results.html"),
+                  match_querystring=True)
+    responses.add(responses.GET, band_url,
+                  body=load_fixture("band_page.html"))
+    responses.add(responses.GET, album1_url,
+                  body=load_fixture("album_page1.html"))
+    responses.add(responses.GET,
+                  "http://bradsucks.bandcamp.com/album/out-of-it",
+                  body=load_fixture("album_page2.html"))
+    responses.add(responses.GET,
+                  "http://bradsucks.bandcamp.com/album/i-dont-know-what-im-doing",
+                  body=load_fixture("album_page3.html"))
     tasks.check_for_cc("Brad Sucks")
     artist = models.Artist.objects.get(url=band_url)
     assert artist.name == "Brad Sucks"
