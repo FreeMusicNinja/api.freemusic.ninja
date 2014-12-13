@@ -1,3 +1,3 @@
-SEARCH_URL = "https://bandcamp.com/search"
+SEARCH_URL = "http://bandcamp.com/search"
 
 from . import tasks

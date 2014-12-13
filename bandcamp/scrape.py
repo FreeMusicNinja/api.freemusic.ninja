@@ -38,5 +38,6 @@ def album_info(band, album_page_url):
     album.title = album_page.get_title()
     album.artist = band
     album.art = album_page.get_art()
+    album.release_date = album_page.get_release_date()
     album.license = album_page.get_license()
     album.save()

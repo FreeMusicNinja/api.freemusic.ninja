@@ -52,5 +52,9 @@ class Album(Page):
         og_image = self.tree.cssselect("meta[property='og:image']")[0]
         return og_image.get("content")
 
+    def get_release_date(self):
+        date_published = self.tree.cssselect("meta[itemprop='datePublished']")[0]
+        return date_published.get("content")
+
     def get_license(self):
         return self.text_by_selector("#license")

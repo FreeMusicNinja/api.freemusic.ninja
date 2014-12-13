@@ -12,7 +12,7 @@ class Album(models.Model):
     artist = models.ForeignKey(Artist, null=True)
     url = models.URLField(unique=True)
     art = models.URLField(null=True)
-    release_date = models.DateField(blank=True, null=True)
+    release_date = models.CharField(max_length=100, null=True)
     license = models.CharField(max_length=255, blank=True, null=True)
     as_of = models.DateTimeField(auto_now=True)
 
