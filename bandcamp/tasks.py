@@ -12,3 +12,4 @@ def check_for_cc(artist_name):
             band_page=band_page_url,
             album_path=album_url,
         ))
+check_for_cc.rate_limit = "1/m"
