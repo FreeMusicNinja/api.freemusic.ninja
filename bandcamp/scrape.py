@@ -11,7 +11,10 @@ def search_for_band_page(artist_name):
     url = URL(SEARCH_URL).query_param("q", artist_name)
     response = requests.get(url)
     tree = html.fromstring(response.text)
-    url_element = tree.cssselect(BAND_RESULT_URL_SELECTOR)[0]
+    try:
+        url_element = tree.cssselect(BAND_RESULT_URL_SELECTOR)[0]
+    except IndexError:
+        return
     band_url = html.tostring(url_element, method="text")
     return band_url.decode('unicode_escape').strip()
 
@@ -30,8 +33,12 @@ def band_info(band_page_url):
 
 
 def album_info(band, album_page_url):
-    if models.Album.objects.filter(url=album_page_url).exists():
-        return
+    try:
+        album = models.Album.objects.get(url=album_page_url)
+    except models.Album.DoesNotExist:
+        pass
+    else:
+        return album  # don't bother rescraping
     album = models.Album(url=album_page_url)
     album_page = pages.Album(album_page_url)
     album_page.populate()
@@ -41,3 +48,4 @@ def album_info(band, album_page_url):
     album.release_date = album_page.get_release_date()
     album.license = album_page.get_license()
     album.save()
+    return album
