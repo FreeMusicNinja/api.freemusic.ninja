@@ -6,6 +6,9 @@ class Artist(models.Model):
     url = models.URLField(unique=True)
     location = models.CharField(max_length=255, null=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Album(models.Model):
     title = models.CharField(max_length=255, null=True)
