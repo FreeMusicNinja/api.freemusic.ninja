@@ -33,7 +33,8 @@ class Page(object):
 class Band(Page):
 
     def get_name(self):
-        return self.text_by_selector("#band-name-location .title")
+        og_site_title = self.tree.cssselect("meta[property='og:site_name']")[0]
+        return og_site_title.get("content")
 
     def get_location(self):
         return self.text_by_selector("#band-name-location .location")

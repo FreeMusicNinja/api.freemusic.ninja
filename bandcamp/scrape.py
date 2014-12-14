@@ -23,12 +23,11 @@ def band_info(band_page_url):
     band, created = models.Artist.objects.get_or_create(url=band_page_url)
     band_page = pages.Band(band_page_url)
     band_page.populate()
-    if not created:
-        return band, band_page
-    band.name = band_page.get_name()
-    band.location = band_page.get_location()
-    band.url = band_page_url
-    band.save()
+    if created or not band.name:
+        band.name = band_page.get_name()
+        band.location = band_page.get_location()
+        band.url = band_page_url
+        band.save()
     return band, band_page
 
 
