@@ -9,7 +9,7 @@ BAND_RESULT_URL_SELECTOR = ".searchresult.band .itemurl"
 
 def search_for_band_page(artist_name):
     url = URL(SEARCH_URL).query_param("q", artist_name)
-    response = requests.get(url)
+    response = requests.get(str(url))
     tree = html.fromstring(response.text)
     try:
         url_element = tree.cssselect(BAND_RESULT_URL_SELECTOR)[0]
