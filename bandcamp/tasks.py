@@ -1,8 +1,11 @@
+import logging
 from celery import shared_task
 
 from artists import models as artist_models
 
 from . import scrape
+
+logger = logging.getLogger()
 
 
 @shared_task
@@ -13,12 +16,16 @@ def check_for_cc(artist_name):
         return  # no search results found
     band, band_page = scrape.band_info(band_page_url)
     for album_url in band_page.get_album_urls():
-        album = scrape.album_info(band, "{band_page}{album_path}".format(
-            band_page=band_page_url,
-            album_path=album_url,
-        ))
-        if "some rights reserved" in album.license.lower():
-            creative_commons = True
+        try:
+            album = scrape.album_info(band, "{band_page}{album_path}".format(
+                band_page=band_page_url,
+                album_path=album_url,
+            ))
+        except Exception as e:
+            logger.error(str(e), exc_info=True)
+        else:
+            if "some rights reserved" in album.license.lower():
+                creative_commons = True
     if creative_commons:  # populate api result links
         artist, _ = artist_models.Artist.objects.get_or_create(name=band.name)
         artist.links.get_or_create(
