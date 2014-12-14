@@ -39,7 +39,7 @@ class Band(Page):
         return self.text_by_selector("#band-name-location .location")
 
     def get_album_urls(self):
-        anchor_elements = self.tree.cssselect(".leftMiddleColumns li a")
+        anchor_elements = self.tree.cssselect(".leftMiddleColumns li a, #discography a")
         return [a.get("href") for a in anchor_elements]
 
 

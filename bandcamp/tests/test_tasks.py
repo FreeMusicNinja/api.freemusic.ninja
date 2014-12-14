@@ -2,7 +2,7 @@ import os
 import pytest
 import responses
 
-from .. import models, tasks
+from .. import models, pages, tasks
 
 MODULE_PATH = os.path.dirname(__file__)
 FIXTURE_PATH = os.path.abspath(os.path.join(MODULE_PATH, "..", "fixtures"))
@@ -41,3 +41,9 @@ def test_bandcamp_cc_check():
     assert album1.art == "http://f1.bcbits.com/img/a1582935420_2.jpg"
     assert album1.release_date == "20121102"
     assert album1.license == "all rights reserved"
+
+
+def test_retrieve_sidebar_albums():
+    with open(os.path.join(FIXTURE_PATH, "mollylewis.html")) as band_file:
+        band_page = pages.Band("http://mollylewis.bandcamp.com/", html_text=band_file.read())
+    assert "/album/thanksgiving-vs-christmas" in band_page.get_album_urls()
