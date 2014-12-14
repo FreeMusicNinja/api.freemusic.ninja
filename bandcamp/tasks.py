@@ -30,4 +30,4 @@ def check_for_cc(artist_name):
         artist, _ = artist_models.Artist.objects.get_or_create(name=band.name)
         artist.links.get_or_create(
             name='bandcamp', defaults={'url': band_page_url, 'order': 25})
-check_for_cc.rate_limit = "1/m"
+check_for_cc.rate_limit = "5/m"
