@@ -193,3 +193,4 @@ try:
     BROKER_URL = os.environ['BROKER_URL']
 except KeyError:
     CELERY_ALWAYS_EAGER = True
+CELERY_TASK_SERIALIZER = 'json'
