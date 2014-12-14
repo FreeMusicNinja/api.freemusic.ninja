@@ -3,7 +3,7 @@ import requests
 
 
 def text_tostring(element):
-    text_string = html.tostring(element, method="text")
+    text_string = html.tostring(element, method="text", encoding="UTF-8")
     return text_string.decode('unicode_escape').strip()
 
 
