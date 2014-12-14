@@ -52,6 +52,7 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
 
     'artists',
+    'bandcamp',
     'echonest',
     'similarities',
     'users',
@@ -187,3 +188,8 @@ LOGGING = {
 RAVEN_CONFIG = {
     'dsn': os.environ.get('RAVEN_CONFIG_DSN'),
 }
+
+try:
+    BROKER_URL = os.environ['BROKER_URL']
+except KeyError:
+    CELERY_ALWAYS_EAGER = True
