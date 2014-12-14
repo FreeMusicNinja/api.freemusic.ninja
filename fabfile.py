@@ -20,7 +20,8 @@ def deploy():
         run("ln -s {project_path} {deploy_path}".format(
             project_path=env.directory, deploy_path=env.deploy_path))
         run("service gunicorn restart")
-        run("service celeryd restart")
+        run("service celeryd stop")
+        run("service celeryd start")
 
 
 def dbshell():
