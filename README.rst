@@ -10,11 +10,11 @@ Free Music Ninja API
 Requirements
 ------------
 
-This project requires `Python 3`_ and `PostgreSQL`_:
+This project requires `Python 3`_ and `lxml`_:
 
 .. code-block:: bash
 
-    $ sudo apt-get install python3-dev libpq-dev postgresql postgresql-contrib
+    $ sudo apt-get install python3-dev libxml2-dev libxslt1-dev
 
 
 Installation
@@ -52,7 +52,7 @@ This project uses environment variables for configuration.
 4. ``SECRET_KEY``: `Secret key`_ for cryptographic signing
 5. ``DATABASE_URL``: URL for database connection (see `database URL schema`_)
 
-If you don't want to setup Postgres, set ``DATABASE_URL`` to ``sqlite:///freemusicninja.db``
+If you want to setup Postgres, set ``DATABASE_URL`` to ``postgres://postgres:postgres@localhost/freemusicninja``
 
 
 Database Migrations
@@ -114,7 +114,7 @@ There is a deploy task in the Fabric file.  Unfortunately Fabric currently requi
 .. _database url schema: https://github.com/kennethreitz/dj-database-url#url-schema
 .. _freemusicarchive api: http://freemusicarchive.org/api/
 .. _jamendo api: https://developer.jamendo.com/
-.. _postgresql: https://www.python.org/downloads/
 .. _python 3: https://www.python.org/downloads/
+.. _lxml: http://lxml.de/
 .. _secret key: https://docs.djangoproject.com/en/1.7/ref/settings/#std:setting-SECRET_KEY
 .. _the echo nest api: https://developer.echonest.com/

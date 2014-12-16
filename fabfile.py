@@ -13,7 +13,7 @@ def deploy():
     with cd(env.directory):
         run("git fetch")
         run("git reset --hard origin/master")
-        sudo("pip3 install -r requirements.txt")
+        sudo("pip3 install -r requirements.txt -r prod-requirements.txt")
         sudo("python3 manage.py collectstatic --noinput")
         sudo("python3 manage.py migrate --noinput", user='django')
         run("rm -f {deploy_path}".format(deploy_path=env.deploy_path))

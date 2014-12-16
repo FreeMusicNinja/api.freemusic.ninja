@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'freemusicninja.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgres://postgres:postgres@localhost/freemusicninja'
+        default='sqlite:///freemusicninja.sqlite'
     ),
 }
 
