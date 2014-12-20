@@ -54,6 +54,7 @@ INSTALLED_APPS = (
     'artists',
     'bandcamp',
     'echonest',
+    'fma',
     'similarities',
     'users',
 )
