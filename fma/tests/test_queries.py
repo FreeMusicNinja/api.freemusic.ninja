@@ -43,5 +43,37 @@ def test_track_query():
                                 + "6th_Sense_-_05_-_Too_Complex_-_2009113045601543.jpg")
     assert track.artist == artist
     assert track.album == album
-    assert track.license_title is None
-    assert track.license_url is None
+    assert track.license_title == "Attribution-Noncommercial-Share Alike 3.0 United States"
+    assert track.license_url == "http://creativecommons.org/licenses/by-nc-sa/3.0/us/"
+    assert track.language_code == "en"
+    assert track.duration == "02:26"
+    assert track.number == 5
+    assert track.disc_number == 1
+    assert track.explicit == ""
+    assert track.explicit_notes is None
+    assert track.copyright_c is None
+    assert track.copyright_p is None
+    assert track.composer is None
+    assert track.lyricist is None
+    assert track.publisher is None
+    assert not track.instrumental
+    assert track.information is None
+    assert track.date_recorded is None
+    assert track.comments == 0
+    assert track.favorites == 0
+    assert track.listens == 335
+    assert track.interest == 1213
+    assert track.bit_rate == 192000
+    assert track.date_created == "4/30/2009 02:29:11 PM"
+    assert track.file == "music/Notherground_Music/6th_Sense/Its_Notherground_Music/6th_Sense_-_05_-_Too_Complex.mp3"
+    assert track.license_image_file == "http://i.creativecommons.org/l/by-nc-sa/3.0/us/88x31.png"
+    assert track.license_image_file_large == "http://fma-files.s3.amazonaws.com/resources/img/licenses/by-nc-sa.png"
+    assert track.license_parent_id == 5
+    assert track.tags == []
+    assert set(track.genres.values_list('pk', flat=True)) == {21}
+
+
+    genre = models.Genre.objects.latest('pk')
+    assert genre.id == 21
+    assert genre.title == "Hip-Hop"
+    assert genre.url == "http://freemusicarchive.org/genre/Hip-Hop/"

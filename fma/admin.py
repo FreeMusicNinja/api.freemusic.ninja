@@ -38,3 +38,4 @@ class TrackInline(admin.TabularInline):
 admin.site.register(models.Artist, actions=(query_from_api,), list_filter=(SignificantAlbumListFilter,))
 admin.site.register(models.Album)
 admin.site.register(models.Track)
+admin.site.register(models.Genre)

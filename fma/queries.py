@@ -7,6 +7,18 @@ from . import models
 API_KEY = getattr(settings, 'FMA_API_KEY', None)
 
 
+class FMAQueryException(Exception):
+    """Base exception for errors querying the FMA API"""
+
+
+class FMAServerError(FMAQueryException):
+    """Raised when an error status code is found on a response from the FMA server"""
+
+
+class FMAQueryError(FMAQueryException):
+    """Error indicated in the API response, probably an error in the request"""
+
+
 def query_tracks(artist=None):
     track_resource = "http://freemusicarchive.org/api/get/tracks.json"
     query_url = purl.URL(track_resource).query_params({
@@ -15,8 +27,10 @@ def query_tracks(artist=None):
     }).as_string()
     response = requests.get(query_url)
     if response.status_code >= 500:
-        return []
+        raise FMAServerError("Failed to query FMA artist due to server error.")
     track_data = response.json()
+    if track_data['errors']:
+        raise FMAQueryError("Error querying Free Music Archive: {}".format(track_data['errors']))
     return [track_from_json(t) for t in track_data['dataset']]
 
 
@@ -37,10 +51,21 @@ def track_from_json(data):
     track = models.Track(artist=artist, album=album)
     for field in track._meta.fields:
         try:
-            value = data["track_{}".format(field.name)]
+            try:
+                value = data["track_{}".format(field.name)]
+            except KeyError:
+                value = data[field.name]
         except KeyError:
             pass
         else:
             setattr(track, field.name, value)
+    track.instrumental = int(data['track_instrumental'])
     track.save()
+    for genre_data in data['track_genres']:
+        genre, _ = models.Genre.objects.update_or_create(
+            id=genre_data['genre_id'],
+            title=genre_data['genre_title'],
+            url=genre_data['genre_url']
+        )
+        track.genres.add(genre)
     return track
