@@ -1,4 +1,3 @@
-from django.core.exceptions import ImproperlyConfigured
 from rest_framework import viewsets
 
 from .models import User

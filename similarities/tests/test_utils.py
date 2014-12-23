@@ -192,4 +192,4 @@ class AddNewSimilaritiesTest(TestCase):
         args = list(self.update_similarities.call_args[0][0])
         assert args == artists
         assert (self.make_similarity.mock_calls ==
-                [call(user, artist, artists[i], 1-i/2) for i in (0, 1)])
+                [call(user, artist, artists[i], 1 - i/2) for i in (0, 1)])

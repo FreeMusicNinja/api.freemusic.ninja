@@ -15,7 +15,8 @@ class HyperlinkSerializer(serializers.ModelSerializer):
 
 class SimilaritySerializer(serializers.ModelSerializer):
     other_artist = serializers.CharField()
-    cc_artist = serializers.PrimaryKeyRelatedField(style={'input_type': "number"}, queryset=Artist.objects.all())
+    cc_artist = serializers.PrimaryKeyRelatedField(style={'input_type': "number"},
+                                                   queryset=Artist.objects.all())
     weight = serializers.IntegerField(default=0)
 
     def validate_other_artist(self, value):

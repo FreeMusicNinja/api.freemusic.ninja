@@ -3,7 +3,7 @@ from rest_framework import permissions, viewsets
 
 from similarities.utils import get_similar
 from .models import Artist
-from similarities.models import UserSimilarity, Similarity, update_similarities
+from similarities.models import UserSimilarity
 from .serializers import ArtistSerializer, SimilaritySerializer
 from bandcamp import tasks as bandcamp_tasks
 

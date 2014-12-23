@@ -68,7 +68,8 @@ class SimilarTest(APITestCase):
 
     def test_list_similar(self):
         artist = Artist.objects.create(name="Brad Sucks")
-        similarity = artist.usersimilarity_set.create(user=self.user, other_artist=self.general_artists[0])
+        similarity = artist.usersimilarity_set.create(
+            user=self.user, other_artist=self.general_artists[0])
         self.check_retrieve_list(artist, [similarity])
 
     def test_create_similar(self):
@@ -161,7 +162,8 @@ class SimilarTest(APITestCase):
             'other_artist': old_name,
             'weight': 2,
         }, format="json")
-        url = reverse('usersimilarity-detail', args=[UserSimilarity.objects.get(other_artist__name=old_name).pk])
+        user_similarity = UserSimilarity.objects.get(other_artist__name=old_name)
+        url = reverse('usersimilarity-detail', args=[user_similarity.pk])
         response = self.client.put(url, data={
             'cc_artist': cc_artist.pk,
             'other_artist': new_name,
