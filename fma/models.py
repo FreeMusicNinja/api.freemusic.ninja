@@ -2,6 +2,8 @@ from django.db import models
 import jsonfield
 from model_utils.models import TimeStampedModel
 
+from artists import models as artists_models
+
 
 class Genre(TimeStampedModel):
     id = models.IntegerField(primary_key=True)
@@ -41,6 +43,16 @@ class Artist(TimeStampedModel):
 
     class Meta:
         ordering = ('name',)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # crude updating of known artists and hyperlinks
+        artist, _ = artists_models.Artist.objects.get_or_create(name=self.name)
+        artists_models.Hyperlink.objects.get_or_create(
+            artist=artist,
+            name='fma',
+            defaults={'order': 40, 'url': self.url},
+        )
 
     def __str__(self):
         return self.name

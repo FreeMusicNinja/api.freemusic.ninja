@@ -2,6 +2,8 @@ import os
 import pytest
 import responses
 
+from artists import models as artists_models
+
 from .. import models, queries
 
 MODULE_PATH = os.path.dirname(__file__)
@@ -72,8 +74,11 @@ def test_track_query():
     assert track.tags == []
     assert set(track.genres.values_list('pk', flat=True)) == {21}
 
-
     genre = models.Genre.objects.latest('pk')
     assert genre.id == 21
     assert genre.title == "Hip-Hop"
     assert genre.url == "http://freemusicarchive.org/genre/Hip-Hop/"
+
+    hyperlink = artists_models.Hyperlink.objects.get(artist__name=artist.name)
+    assert hyperlink.url == artist.url
+    assert hyperlink.order == 40
