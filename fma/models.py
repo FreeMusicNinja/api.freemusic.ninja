@@ -31,7 +31,7 @@ class Artist(TimeStampedModel):
     associated_labels = models.CharField(max_length=500, null=True)
     comments = models.IntegerField(null=True)
     favorites = models.IntegerField(null=True)
-    date_created = models.DateTimeField(null=True)
+    date_created = models.CharField(max_length=100, null=True)
     flattr_name = models.CharField(max_length=100, null=True)
     paypal_name = models.CharField(max_length=100, null=True)
     latitude = models.CharField(max_length=20, null=True)
@@ -61,7 +61,7 @@ class Artist(TimeStampedModel):
 class Album(TimeStampedModel):
     id = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=250, null=True)
-    url = models.URLField(max_length=2000)
+    url = models.URLField(max_length=2000, null=True)
     artist = models.ForeignKey(Artist, null=True)
 
     class Meta:
@@ -74,7 +74,7 @@ class Album(TimeStampedModel):
 class Track(TimeStampedModel):
     id = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=250)
-    url = models.URLField(max_length=2000)
+    url = models.URLField(max_length=2000, null=True)
     image_file = models.URLField(max_length=2000, null=True)
     artist = models.ForeignKey(Artist, null=True)
     album = models.ForeignKey(Album, null=True)
@@ -93,7 +93,7 @@ class Track(TimeStampedModel):
     publisher = models.CharField(max_length=250, null=True)
     instrumental = models.NullBooleanField()
     information = models.CharField(max_length=250, null=True)
-    date_recorded = models.DateField(null=True)
+    date_recorded = models.CharField(max_length=100, null=True)
     comments = models.IntegerField(null=True)
     favorites = models.IntegerField(null=True)
     listens = models.IntegerField(null=True)

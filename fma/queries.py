@@ -61,7 +61,7 @@ def track_from_json(data):
             setattr(track, field.name, value)
     track.instrumental = int(data['track_instrumental'])
     track.save()
-    for genre_data in data['track_genres']:
+    for genre_data in data.get('track_genres', []):
         genre, _ = models.Genre.objects.update_or_create(
             id=genre_data['genre_id'],
             title=genre_data['genre_title'],

@@ -2,8 +2,8 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import jsonfield.fields
 import django.utils.timezone
+import jsonfield.fields
 import model_utils.fields
 
 
@@ -16,11 +16,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Album',
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
+                ('created', model_utils.fields.AutoCreatedField(editable=False, verbose_name='created', default=django.utils.timezone.now)),
+                ('modified', model_utils.fields.AutoLastModifiedField(editable=False, verbose_name='modified', default=django.utils.timezone.now)),
                 ('id', models.IntegerField(serialize=False, primary_key=True)),
                 ('title', models.CharField(max_length=250, null=True)),
-                ('url', models.URLField(max_length=2000)),
+                ('url', models.URLField(max_length=2000, null=True)),
             ],
             options={
                 'ordering': ('title',),
@@ -30,8 +30,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Artist',
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
+                ('created', model_utils.fields.AutoCreatedField(editable=False, verbose_name='created', default=django.utils.timezone.now)),
+                ('modified', model_utils.fields.AutoLastModifiedField(editable=False, verbose_name='modified', default=django.utils.timezone.now)),
                 ('id', models.IntegerField(serialize=False, primary_key=True)),
                 ('handle', models.CharField(max_length=250, null=True)),
                 ('url', models.URLField(max_length=2000)),
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('associated_labels', models.CharField(max_length=500, null=True)),
                 ('comments', models.IntegerField(null=True)),
                 ('favorites', models.IntegerField(null=True)),
-                ('date_created', models.DateTimeField(null=True)),
+                ('date_created', models.CharField(max_length=100, null=True)),
                 ('flattr_name', models.CharField(max_length=100, null=True)),
                 ('paypal_name', models.CharField(max_length=100, null=True)),
                 ('latitude', models.CharField(max_length=20, null=True)),
@@ -66,8 +66,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Genre',
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
+                ('created', model_utils.fields.AutoCreatedField(editable=False, verbose_name='created', default=django.utils.timezone.now)),
+                ('modified', model_utils.fields.AutoLastModifiedField(editable=False, verbose_name='modified', default=django.utils.timezone.now)),
                 ('id', models.IntegerField(serialize=False, primary_key=True)),
                 ('title', models.CharField(max_length=250)),
                 ('url', models.URLField()),
@@ -80,11 +80,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Track',
             fields=[
-                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, editable=False, verbose_name='created')),
-                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, editable=False, verbose_name='modified')),
+                ('created', model_utils.fields.AutoCreatedField(editable=False, verbose_name='created', default=django.utils.timezone.now)),
+                ('modified', model_utils.fields.AutoLastModifiedField(editable=False, verbose_name='modified', default=django.utils.timezone.now)),
                 ('id', models.IntegerField(serialize=False, primary_key=True)),
                 ('title', models.CharField(max_length=250)),
-                ('url', models.URLField(max_length=2000)),
+                ('url', models.URLField(max_length=2000, null=True)),
                 ('image_file', models.URLField(max_length=2000, null=True)),
                 ('license_title', models.CharField(max_length=250, null=True)),
                 ('license_url', models.URLField(max_length=2000, null=True)),
@@ -101,7 +101,7 @@ class Migration(migrations.Migration):
                 ('publisher', models.CharField(max_length=250, null=True)),
                 ('instrumental', models.NullBooleanField()),
                 ('information', models.CharField(max_length=250, null=True)),
-                ('date_recorded', models.DateField(null=True)),
+                ('date_recorded', models.CharField(max_length=100, null=True)),
                 ('comments', models.IntegerField(null=True)),
                 ('favorites', models.IntegerField(null=True)),
                 ('listens', models.IntegerField(null=True)),
@@ -113,8 +113,8 @@ class Migration(migrations.Migration):
                 ('license_image_file_large', models.URLField(max_length=2000, null=True)),
                 ('license_parent_id', models.IntegerField(null=True)),
                 ('tags', jsonfield.fields.JSONField(null=True)),
-                ('album', models.ForeignKey(null=True, to='fma.Album')),
-                ('artist', models.ForeignKey(null=True, to='fma.Artist')),
+                ('album', models.ForeignKey(to='fma.Album', null=True)),
+                ('artist', models.ForeignKey(to='fma.Artist', null=True)),
                 ('genres', models.ManyToManyField(to='fma.Genre')),
             ],
             options={
@@ -125,7 +125,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='album',
             name='artist',
-            field=models.ForeignKey(null=True, to='fma.Artist'),
+            field=models.ForeignKey(to='fma.Artist', null=True),
             preserve_default=True,
         ),
     ]
