@@ -36,11 +36,3 @@ class SimilarViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
-
-    def get_serializer(self, instance=None, *args, **kwargs):
-        try:
-            instance = instance or self.get_object()
-        except (Http404, AssertionError):
-            instance = self.get_queryset().model()
-        instance.user = self.request.user
-        return super().get_serializer(instance, *args, **kwargs)

@@ -18,15 +18,21 @@ class SimilaritySerializer(serializers.ModelSerializer):
     cc_artist = serializers.PrimaryKeyRelatedField(style={'input_type': "number"},
                                                    queryset=Artist.objects.all())
     weight = serializers.IntegerField(default=0)
+    user = serializers.PrimaryKeyRelatedField(
+        read_only=True, default=serializers.CurrentUserDefault())
 
     def validate_other_artist(self, value):
         artist, _ = GeneralArtist.objects.get_or_create(
             normalized_name=value.upper(), defaults={'name': value})
         return artist
 
+    def to_representation(self, instance):
+        d = super().to_representation(instance)
+        d.pop('user')
+        return d
+
     class Meta:
         model = UserSimilarity
-        exclude = ('user',)
         validators = [
             serializers.UniqueTogetherValidator(
                 queryset=UserSimilarity.objects.all(),
