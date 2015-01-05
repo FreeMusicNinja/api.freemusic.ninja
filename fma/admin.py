@@ -7,8 +7,12 @@ from . import models, queries
 def query_from_api(modeladmin, request, queryset):
     to_update = queryset.filter(modified__lt=(timezone.now() - timezone.timedelta(weeks=1)))
     for artist in to_update:
-        queries.query_tracks(artist)
-        artist.save()
+        try:
+            queries.query_tracks(artist)
+        except queries.FMAQueryException:
+            pass  # ignore these for the admin command
+        else:
+            artist.save()
 
 
 class SignificantAlbumListFilter(admin.SimpleListFilter):
