@@ -24,6 +24,7 @@ def query_tracks(artist=None):
     query_url = purl.URL(track_resource).query_params({
         'api_key': API_KEY,
         'artist_id': artist.pk,
+        'limit': 20000,
     }).as_string()
     response = requests.get(query_url)
     if response.status_code >= 500:

@@ -20,7 +20,7 @@ def load_fixture(filename):
 @responses.activate
 def test_track_query():
     query_artist = models.Artist(id=3089)
-    track_url = "http://freemusicarchive.org/api/get/tracks.json?api_key={}&artist_id={}"
+    track_url = "http://freemusicarchive.org/api/get/tracks.json?api_key={}&artist_id={}&limit=20000"
     responses.add(responses.GET, track_url.format(queries.API_KEY, query_artist.pk),
                   body=load_fixture("6th_Sense.json"), match_querystring=True)
     queries.query_tracks(query_artist)
