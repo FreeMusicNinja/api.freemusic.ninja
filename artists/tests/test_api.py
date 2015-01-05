@@ -72,6 +72,10 @@ class SimilarTest(APITestCase):
             user=self.user, other_artist=self.general_artists[0])
         self.check_retrieve_list(artist, [similarity])
 
+    def test_empty_list_similar(self):
+        artist = Artist.objects.create(name="Brad Sucks")
+        self.check_retrieve_list(artist, [])
+
     def test_create_similar(self):
         artist = Artist.objects.create(name="Brad Sucks")
         url = reverse('usersimilarity-list')
