@@ -34,7 +34,7 @@ class ArtistTest(APITestCase):
         artists = [Artist.objects.create(name=n) for n in names]
         get_similar.return_value = SimilarResponse(
             name="They Might Be Giants",
-            response=json.dumps(response),
+            response=response,
         )
         data = {'name': "They Might Be Giants"}
         response = self.client.get(url, data, format='json')

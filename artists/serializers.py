@@ -10,7 +10,7 @@ class HyperlinkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Hyperlink
-        fields = ('id', 'display_name', 'name', 'url')
+        fields = ('id', 'display_name', 'name', 'url', 'num_tracks')
 
 
 class SimilaritySerializer(serializers.ModelSerializer):

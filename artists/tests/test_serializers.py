@@ -15,13 +15,15 @@ class HyperlinkSerializerTest(TestCase):
         name = 'jamendo'
         display_name = "Jamendo"
         url = "http://www.jamendo.com/artist/1333"
-        link = Hyperlink(id=id_, name=name, url=url)
+        tracks = 42
+        link = Hyperlink(id=id_, name=name, url=url, num_tracks=tracks)
         serializer = HyperlinkSerializer(link)
         assert (serializer.data == {
             'id': id_,
             'name': name,
             'display_name': display_name,
             'url': url,
+            'num_tracks': tracks,
         })
 
 

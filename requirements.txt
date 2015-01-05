@@ -5,10 +5,10 @@ django-secure==1.0.1
 dj-database-url==0.3.0
 django-cors-headers==0.13
 django-filter==0.8
-django-jsonfield==0.9.13
 django-model-utils==2.2.0
 djangorestframework==3.0.1
 iron-celery==0.4.3
+jsonfield==1.0.0
 lxml==3.4.1
 psycopg2==2.5.4
 purl==1.0

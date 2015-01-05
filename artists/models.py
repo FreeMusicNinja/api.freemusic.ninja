@@ -36,6 +36,7 @@ class Hyperlink(TimeStampedModel):
     artist = models.ForeignKey(Artist, related_name='links')
     name = models.CharField(max_length=50, choices=NAMES)
     url = models.URLField()
+    num_tracks = models.IntegerField(blank=True, default=None, null=True)
 
     class Meta:
         ordering = ('order',)
@@ -122,8 +123,8 @@ class FMAArtist(TimeStampedModel):
     artist_longitude = models.CharField(max_length=20, null=True)
     artist_image_file = models.URLField(null=True)
     artist_location = models.CharField(max_length=500, null=True)
-    tags = jsonfield.JSONField()
-    artist_images = jsonfield.JSONField()
+    tags = jsonfield.JSONField(null=True)
+    artist_images = jsonfield.JSONField(null=True)
 
     @property
     def name(self):
