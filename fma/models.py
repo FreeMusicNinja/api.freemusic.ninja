@@ -48,10 +48,10 @@ class Artist(TimeStampedModel):
         super().save(*args, **kwargs)
         # crude updating of known artists and hyperlinks
         artist, _ = artists_models.Artist.objects.get_or_create(name=self.name)
-        artists_models.Hyperlink.objects.get_or_create(
+        artists_models.Hyperlink.objects.update_or_create(
             artist=artist,
             name='fma',
-            defaults={'order': 40, 'url': self.url},
+            defaults={'order': 40, 'url': self.url, 'num_tracks': self.track_set.count()},
         )
 
     def __str__(self):

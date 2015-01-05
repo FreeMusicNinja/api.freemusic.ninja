@@ -82,3 +82,4 @@ def test_track_query():
     hyperlink = artists_models.Hyperlink.objects.get(artist__name=artist.name)
     assert hyperlink.url == artist.url
     assert hyperlink.order == 40
+    assert hyperlink.num_tracks == 33

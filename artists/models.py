@@ -36,6 +36,7 @@ class Hyperlink(TimeStampedModel):
     artist = models.ForeignKey(Artist, related_name='links')
     name = models.CharField(max_length=50, choices=NAMES)
     url = models.URLField()
+    num_tracks = models.IntegerField(blank=True, default=None, null=True)
 
     class Meta:
         ordering = ('order',)
