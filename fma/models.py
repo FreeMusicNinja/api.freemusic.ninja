@@ -92,7 +92,7 @@ class Track(TimeStampedModel):
     lyricist = models.CharField(max_length=250, null=True)
     publisher = models.CharField(max_length=250, null=True)
     instrumental = models.NullBooleanField()
-    information = models.CharField(max_length=250, null=True)
+    information = models.TextField(null=True)
     date_recorded = models.CharField(max_length=100, null=True)
     comments = models.IntegerField(null=True)
     favorites = models.IntegerField(null=True)
