@@ -1,12 +1,10 @@
-from django.utils import timezone
 from django.contrib import admin
 
 from . import models, queries
 
 
 def query_from_api(modeladmin, request, queryset):
-    to_update = queryset.filter(modified__lt=(timezone.now() - timezone.timedelta(weeks=1)))
-    for artist in to_update:
+    for artist in queryset:
         try:
             queries.query_tracks(artist)
         except queries.FMAQueryException:
