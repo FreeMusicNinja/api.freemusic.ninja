@@ -5,6 +5,9 @@ from model_utils import Choices
 from model_utils.models import TimeStampedModel
 
 
+MIN_TRACKS_TO_HAVE_WEIGHT = 3
+
+
 class GeneralArtist(TimeStampedModel):
 
     """Any artist that might be searched for."""
@@ -88,10 +91,16 @@ class UserSimilarity(BaseSimilarity):
 class SimilarityManager(models.Manager):
 
     def update_or_create_by_artists(self, other_artist, cc_artist):
-        weight = (UserSimilarity.objects
-                  .filter(other_artist=other_artist,
-                          cc_artist=cc_artist)
-                  .aggregate(models.Avg('weight')))['weight__avg'] or 0
+        low_track_links = (cc_artist.links
+                           .filter(num_tracks__lt=MIN_TRACKS_TO_HAVE_WEIGHT)
+                           .exclude(num_tracks__gte=MIN_TRACKS_TO_HAVE_WEIGHT))
+        if low_track_links.exists():
+            weight = 0
+        else:
+            weight = (UserSimilarity.objects
+                      .filter(other_artist=other_artist,
+                              cc_artist=cc_artist)
+                      .aggregate(models.Avg('weight')))['weight__avg'] or 0
         return self.update_or_create(
             other_artist=other_artist,
             cc_artist=cc_artist,
