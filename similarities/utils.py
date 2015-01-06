@@ -4,8 +4,7 @@ import echonest
 from artists.models import Artist
 from echonest.models import SimilarResponse
 from users.models import User
-from .models import (GeneralArtist, UserSimilarity, Similarity,
-                     update_similarities)
+from .models import GeneralArtist, UserSimilarity, Similarity
 
 
 def has_similarities(general_artist):
@@ -28,10 +27,10 @@ def add_new_similarities(artist):
     artist_names = echonest.get_similar(artist.name)
     cc_artists = Artist.objects.filter(name__in=artist_names)
     cc_artists = sorted(cc_artists, key=lambda a: artist_names.index(a.name))
-    update_similarities(
+    for index, cc_artist in enumerate(cc_artists):
         make_similarity(user, artist, cc_artist, 1 - index / len(cc_artists))
-        for index, cc_artist in enumerate(cc_artists)
-    )
+        Similarity.objects.update_or_create_by_artists(
+            other_artist=artist, cc_artist=cc_artist)
 
 
 def get_similar(name):

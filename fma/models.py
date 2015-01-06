@@ -3,6 +3,7 @@ import jsonfield
 from model_utils.models import TimeStampedModel
 
 from artists import models as artists_models
+from similarities import models as similarities_models
 
 
 class Genre(TimeStampedModel):
@@ -48,11 +49,14 @@ class Artist(TimeStampedModel):
         super().save(*args, **kwargs)
         # crude updating of known artists and hyperlinks
         artist, _ = artists_models.Artist.objects.get_or_create(name=self.name)
-        artists_models.Hyperlink.objects.update_or_create(
+        link, _ = artists_models.Hyperlink.objects.update_or_create(
             artist=artist,
             name='fma',
             defaults={'order': 40, 'url': self.url, 'num_tracks': self.track_set.count()},
         )
+        for other_artist in link.artist.generalartist_set.all():
+            similarities_models.Similarity.objects.update_or_create_by_artists(
+                other_artist=other_artist, cc_artist=artist)
 
     def __str__(self):
         return self.name

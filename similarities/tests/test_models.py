@@ -4,6 +4,8 @@ from unittest.mock import patch
 from django.test import TestCase as DjangoTestCase
 
 from artists.models import Artist
+from artists.tests.factories import HyperlinkFactory
+from . import factories
 from .. import models
 
 
@@ -68,3 +70,35 @@ class BaseSimilarityModelTest(TestCase):
 
     def test_default_weight(self):
         assert models.BaseSimilarity().weight == 0
+
+
+class SimilarityManagerTest(DjangoTestCase):
+
+    """Tests for SimilarityManager."""
+
+    def test_low_track_count(self):
+        link = HyperlinkFactory(num_tracks=0)
+        user_similarity = factories.UserSimilarityFactory(
+            weight=5, cc_artist=link.artist)
+        similarity, _ = models.Similarity.objects.update_or_create_by_artists(
+            other_artist=user_similarity.other_artist,
+            cc_artist=user_similarity.cc_artist)
+        assert similarity.weight == 0
+
+    def test_high_track_count(self):
+        link = HyperlinkFactory(num_tracks=20)
+        user_similarity = factories.UserSimilarityFactory(
+            weight=5, cc_artist=link.artist)
+        similarity, _ = models.Similarity.objects.update_or_create_by_artists(
+            other_artist=user_similarity.other_artist,
+            cc_artist=user_similarity.cc_artist)
+        assert similarity.weight == 5
+
+    def test_no_track_count(self):
+        link = HyperlinkFactory(num_tracks=None)
+        user_similarity = factories.UserSimilarityFactory(
+            weight=5, cc_artist=link.artist)
+        similarity, _ = models.Similarity.objects.update_or_create_by_artists(
+            other_artist=user_similarity.other_artist,
+            cc_artist=user_similarity.cc_artist)
+        assert similarity.weight == 5
