@@ -68,25 +68,35 @@ class UserSimilarity(BaseSimilarity):
         )
 
     def save(self, *args, **kwargs):
-        similarities_to_update = []
+        other_artists_to_update = []
         if self.pk:
             prev_other_artist = type(self).objects.get(pk=self.pk).other_artist
         else:
             prev_other_artist = None
         super().save(*args, **kwargs)
         if self.other_artist:
-            cumulative_similarity, _ = Similarity.objects.get_or_create(
-                other_artist=self.other_artist,
-                cc_artist=self.cc_artist,
-            )
-            similarities_to_update.append(cumulative_similarity)
+            other_artists_to_update.append(self.other_artist)
         if prev_other_artist and self.other_artist != prev_other_artist:
-            old_cumulative_similarity, _ = Similarity.objects.get_or_create(
-                other_artist=prev_other_artist,
+            other_artists_to_update.append(prev_other_artist)
+        for other in other_artists_to_update:
+            Similarity.objects.update_or_create_by_artists(
+                other_artist=other,
                 cc_artist=self.cc_artist,
             )
-            similarities_to_update.append(old_cumulative_similarity)
-        update_similarities(similarities_to_update)
+
+
+class SimilarityManager(models.Manager):
+
+    def update_or_create_by_artists(self, other_artist, cc_artist):
+        weight = (UserSimilarity.objects
+                  .filter(other_artist=other_artist,
+                          cc_artist=cc_artist)
+                  .aggregate(models.Avg('weight')))['weight__avg'] or 0
+        return self.update_or_create(
+            other_artist=other_artist,
+            cc_artist=cc_artist,
+            defaults={'weight': weight},
+        )
 
 
 class Similarity(BaseSimilarity):
@@ -99,12 +109,4 @@ class Similarity(BaseSimilarity):
             ('cc_artist', 'other_artist'),
         )
 
-
-def update_similarities(cummulative_similarities):
-    for similarity in cummulative_similarities:
-        weight = (UserSimilarity.objects
-                  .filter(other_artist=similarity.other_artist,
-                          cc_artist=similarity.cc_artist)
-                  .aggregate(models.Avg('weight')))['weight__avg'] or 0
-        similarity.weight = weight
-        similarity.save()
+    objects = SimilarityManager()

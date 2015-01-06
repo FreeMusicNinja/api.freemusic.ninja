@@ -159,14 +159,11 @@ class AddNewSimilaritiesTest(TestCase):
         module = 'similarities.utils.'
         self.echonest_patch = patch(module + 'echonest')
         self.echonest = self.echonest_patch.start()
-        self.update_similarities_patch = patch(module + 'update_similarities')
-        self.update_similarities = self.update_similarities_patch.start()
         self.make_similarity_patch = patch(module + 'make_similarity')
         self.make_similarity = self.make_similarity_patch.start()
 
     def tearDown(self):
         self.echonest_patch.stop()
-        self.update_similarities_patch.stop()
         self.make_similarity_patch.stop()
 
     def test_no_artists(self):
@@ -174,22 +171,16 @@ class AddNewSimilaritiesTest(TestCase):
         self.echonest.get_similar.return_value = []
         utils.add_new_similarities(artist)
         self.echonest.get_similar.assert_called_once_with(artist.name)
-        assert len(self.update_similarities.mock_calls) == 1
-        args = list(self.update_similarities.call_args[0][0])
-        assert args == []
         assert len(self.make_similarity.mock_calls) == 0
 
     def test_two_artists(self):
         names = ["Brad Sucks", "Heifervescent"]
         user = User.objects.get()
-        artist = GeneralArtist(name="Brad Sucks", normalized_name="BRAD SUCKS")
+        artist = GeneralArtist.objects.create(name="Brad Sucks", normalized_name="BRAD SUCKS")
         artists = [Artist.objects.create(name=n) for n in names]
         self.make_similarity.side_effect = lambda a, b, c, d: c
         self.echonest.get_similar.return_value = names
         utils.add_new_similarities(artist)
         self.echonest.get_similar.assert_called_once_with(artist.name)
-        assert len(self.update_similarities.mock_calls) == 1
-        args = list(self.update_similarities.call_args[0][0])
-        assert args == artists
         assert (self.make_similarity.mock_calls ==
                 [call(user, artist, artists[i], 1 - i/2) for i in (0, 1)])
