@@ -185,12 +185,12 @@ class SimilarTest(APITestCase):
 
 
 @patch('bandcamp.tasks.check_for_cc')
+@patch('similarities.utils.has_similarities', return_value=True)
 class GroupSearchResultsTest(APITestCase):
 
     """Tests for SimilarityManager."""
 
-    def test_high_track_count(self, mock_bandcamp_task):
-        print(Similarity.objects.all())
+    def test_high_track_count(self, mock_similar_from_api, mock_bandcamp_task):
         similarity_with_tracks = SimilarityFactory(
             weight=5, cc_artist=factories.HyperlinkFactory(num_tracks=20).artist)
         SimilarityFactory(
@@ -201,13 +201,9 @@ class GroupSearchResultsTest(APITestCase):
             {'name': similarity_with_tracks.other_artist.name},
             format='json',
         )
-        print(Similarity.objects.all())
-        from bandcamp import models
-        print(models.Artist.objects.all())
         assert response.data[0]['id'] == similarity_with_tracks.cc_artist.pk
 
-    def test_low_track_count(self, mock_bandcamp_task):
-        print(Similarity.objects.all())
+    def test_low_track_count(self, mock_similar_from_api, mock_bandcamp_task):
         similarity_with_tracks = SimilarityFactory(
             weight=1, cc_artist=factories.HyperlinkFactory(num_tracks=20).artist)
         SimilarityFactory(
@@ -218,7 +214,4 @@ class GroupSearchResultsTest(APITestCase):
             {'name': similarity_with_tracks.other_artist.name},
             format='json',
         )
-        print(Similarity.objects.all())
-        from bandcamp import models
-        print(models.Artist.objects.all())
         assert response.data[0]['id'] == similarity_with_tracks.cc_artist.pk
