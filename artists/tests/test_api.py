@@ -1,4 +1,3 @@
-import json
 from unittest.mock import patch
 
 from django.core.urlresolvers import reverse
@@ -9,6 +8,9 @@ from rest_framework.test import APITestCase
 from artists.models import Artist
 from echonest.models import SimilarResponse
 from similarities.models import GeneralArtist, Similarity, UserSimilarity
+from similarities.tests.factories import SimilarityFactory
+
+from . import factories
 
 
 class ArtistTest(APITestCase):
@@ -180,3 +182,43 @@ class SimilarTest(APITestCase):
         assert new_similarity.other_artist != old_similarity.other_artist
         assert new_similarity.weight == weight
         assert old_similarity.weight == 0
+
+
+@patch('bandcamp.tasks.check_for_cc')
+class GroupSearchResultsTest(APITestCase):
+
+    """Tests for SimilarityManager."""
+
+    def test_high_track_count(self, mock_bandcamp_task):
+        print(Similarity.objects.all())
+        similarity_with_tracks = SimilarityFactory(
+            weight=5, cc_artist=factories.HyperlinkFactory(num_tracks=20).artist)
+        SimilarityFactory(
+            weight=1, cc_artist=factories.HyperlinkFactory(num_tracks=20).artist,
+            other_artist=similarity_with_tracks.other_artist)
+        response = self.client.get(
+            reverse('artist-list'),
+            {'name': similarity_with_tracks.other_artist.name},
+            format='json',
+        )
+        print(Similarity.objects.all())
+        from bandcamp import models
+        print(models.Artist.objects.all())
+        assert response.data[0]['id'] == similarity_with_tracks.cc_artist.pk
+
+    def test_low_track_count(self, mock_bandcamp_task):
+        print(Similarity.objects.all())
+        similarity_with_tracks = SimilarityFactory(
+            weight=1, cc_artist=factories.HyperlinkFactory(num_tracks=20).artist)
+        SimilarityFactory(
+            weight=5, cc_artist=factories.HyperlinkFactory(num_tracks=0).artist,
+            other_artist=similarity_with_tracks.other_artist)
+        response = self.client.get(
+            reverse('artist-list'),
+            {'name': similarity_with_tracks.other_artist.name},
+            format='json',
+        )
+        print(Similarity.objects.all())
+        from bandcamp import models
+        print(models.Artist.objects.all())
+        assert response.data[0]['id'] == similarity_with_tracks.cc_artist.pk
