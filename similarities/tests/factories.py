@@ -13,11 +13,20 @@ class GeneralArtistFactory(factory.DjangoModelFactory):
     class Meta:
         model = models.GeneralArtist
 
+    name = factory.LazyAttribute(lambda o: fake.sentence(nb_words=2))
 
-class UserSimilarityFactory(factory.DjangoModelFactory):
+
+class SimilarityFactory(factory.DjangoModelFactory):
     class Meta:
-        model = models.UserSimilarity
+        model = models.Similarity
+        django_get_or_create = ('other_artist', 'cc_artist')
 
     other_artist = factory.SubFactory(GeneralArtistFactory)
     cc_artist = factory.SubFactory(artists_factories.ArtistFactory)
+
+
+class UserSimilarityFactory(SimilarityFactory):
+    class Meta:
+        model = models.UserSimilarity
+
     user = factory.SubFactory(users_factories.UserFactory)
