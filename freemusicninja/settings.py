@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     'corsheaders',
     'djangosecure',
     'raven.contrib.django.raven_compat',
+    'relatives',
     'rest_framework',
     'rest_framework.authtoken',
 
@@ -84,6 +85,8 @@ DATABASES = {
 }
 
 FIXTURE_DIRS = [os.path.join(BASE_DIR, 'fixtures')]
+
+TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
