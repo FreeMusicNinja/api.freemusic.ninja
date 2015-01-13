@@ -10,6 +10,9 @@ from users.models import User
 from ..models import GeneralArtist, Similarity, UserSimilarity
 from .. import utils
 
+from artists.tests.factories import ArtistFactory
+from . import factories
+
 
 class HasSimilaritiesAlreadyTest(DjangoTestCase):
 
@@ -35,10 +38,11 @@ class MakeSimilarityTest(DjangoTestCase):
     """Tests for make_similarity."""
 
     def test_similarity_exists(self):
-        name = "Brad Sucks"
+        general_name = "Brad Sucks"
+        open_name = "Josh Woodward"
         user = User.objects.get(email='echonest')
-        other_artist = GeneralArtist.objects.create(name=name)
-        cc_artist = Artist.objects.create(name=name)
+        other_artist = GeneralArtist.objects.create(name=general_name)
+        cc_artist = Artist.objects.create(name=open_name)
         similarity = utils.make_similarity(user, other_artist, cc_artist)
         user_similarity = UserSimilarity.objects.get()
         assert similarity.other_artist == other_artist
@@ -48,7 +52,7 @@ class MakeSimilarityTest(DjangoTestCase):
         assert user_similarity.cc_artist == cc_artist
         assert user_similarity.weight == 1
         assert user_similarity.user == user
-        assert similarity == Similarity.objects.get()
+        assert similarity == Similarity.objects.get(other_artist=other_artist)
 
     def test_no_similarity_exists(self):
         user = User.objects.get(email='echonest')
@@ -65,8 +69,14 @@ class MakeSimilarityTest(DjangoTestCase):
         assert user_similarity.user == user
         assert similarity == Similarity.objects.get(other_artist=other_artist)
 
+    def test_similar_to_itself(self):
+        name = "Brad Sucks"
+        other_artist = factories.GeneralArtistFactory(name=name)
+        open_artist = ArtistFactory(name=name)
+        similarity, _ = Similarity.objects.update_or_create_by_artists(other_artist, open_artist)
+        assert similarity.weight == 5
 
-@pytest.mark.django_db
+
 class GetSimilarTest(DjangoTestCase):
 
     """Tests for get_similar."""
