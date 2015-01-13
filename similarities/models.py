@@ -88,10 +88,13 @@ class UserSimilarity(BaseSimilarity):
 class SimilarityManager(models.Manager):
 
     def update_or_create_by_artists(self, other_artist, cc_artist):
-        weight = (UserSimilarity.objects
-                  .filter(other_artist=other_artist,
-                          cc_artist=cc_artist)
-                  .aggregate(models.Avg('weight')))['weight__avg'] or 0
+        if other_artist.normalized_name == cc_artist.name.upper():
+            weight = 5
+        else:
+            weight = (UserSimilarity.objects
+                      .filter(other_artist=other_artist,
+                              cc_artist=cc_artist)
+                      .aggregate(models.Avg('weight')))['weight__avg'] or 0
         return self.update_or_create(
             other_artist=other_artist,
             cc_artist=cc_artist,
