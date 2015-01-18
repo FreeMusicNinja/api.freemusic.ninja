@@ -14,6 +14,8 @@ class GeneralArtist(TimeStampedModel):
                                        unique=True)
     similar_artists = models.ManyToManyField(to='artists.Artist',
                                              through='Similarity')
+    known_by = models.ManyToManyField(
+        'users.User', related_name="known_artists", through='KnownArtist')
 
     def save(self, **kwargs):
         self.normalized_name = self.name.upper()
@@ -34,6 +36,19 @@ def create_general_artist(instance, created, **kwargs):
 
 
 post_save.connect(create_general_artist, 'artists.Artist')
+
+
+class KnownArtist(TimeStampedModel):
+
+    """A user's knowledge of an artist."""
+
+    user = models.ForeignKey('users.User')
+    artist = models.ForeignKey(GeneralArtist)
+
+    class Meta:
+        unique_together = (
+            ('artist', 'user'),
+        )
 
 
 class BaseSimilarity(TimeStampedModel):

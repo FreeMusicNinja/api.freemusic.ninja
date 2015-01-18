@@ -7,8 +7,9 @@ from rest_framework.test import APITestCase
 
 from artists.models import Artist
 from echonest.models import SimilarResponse
-from similarities.models import GeneralArtist, Similarity, UserSimilarity
-from similarities.tests.factories import SimilarityFactory
+from users.tests.factories import UserFactory
+from similarities.models import GeneralArtist, KnownArtist, Similarity, UserSimilarity
+from similarities.tests.factories import GeneralArtistFactory, SimilarityFactory
 
 from . import factories
 
@@ -215,3 +216,50 @@ class GroupSearchResultsTest(APITestCase):
             format='json',
         )
         assert response.data[0]['id'] == similarity_with_tracks.cc_artist.pk
+
+
+class TestKnownArtists(APITestCase):
+
+    """Tests for managing a user's known artists."""
+
+    def setUp(self):
+        self.known_artist = GeneralArtistFactory()
+        self.discovered_artist = GeneralArtistFactory()
+        self.user = UserFactory()
+        self.user.knownartist_set.create(artist=self.known_artist)
+        self.other_user = UserFactory()
+        self.other_user.knownartist_set.create(artist=self.known_artist)
+        self.client.force_authenticate(user=self.user)
+        self.url = reverse('knownartist-list')
+
+    def test_get_known_artists(self):
+        response = self.client.get(self.url)
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == [
+            {
+                'id': self.known_artist.pk,
+                'name': self.known_artist.name,
+                'url': "http://testserver{}".format(
+                    reverse('artist-detail', kwargs={'pk': self.known_artist.pk})),
+            },
+        ]
+
+    def test_add_known_artist(self):
+        post_response = self.client.post(self.url, {'name': self.discovered_artist.name})
+        assert post_response.status_code == status.HTTP_201_CREATED
+        assert post_response.data == {
+            'id': self.discovered_artist.pk,
+            'name': self.discovered_artist.name,
+            'url': "http://testserver{}".format(
+                reverse('artist-detail', kwargs={'pk': self.discovered_artist.pk})),
+        }
+
+    def test_delete_known_artist(self):
+        url = reverse('knownartist-detail', kwargs={'artist': self.known_artist.pk})
+        delete_response = self.client.delete(url)
+        assert delete_response.status_code == status.HTTP_204_NO_CONTENT
+        assert delete_response.data is None
+
+    def test_duplicate_known_artist(self):
+        post_response = self.client.post(self.url, {'name': self.known_artist.name})
+        assert post_response.status_code == status.HTTP_400_BAD_REQUEST
