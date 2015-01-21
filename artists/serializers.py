@@ -3,6 +3,8 @@ from rest_framework import serializers, validators
 from artists.models import Artist, Hyperlink
 from similarities.models import UserSimilarity, GeneralArtist, KnownArtist
 
+from . import fields
+
 
 class HyperlinkSerializer(serializers.ModelSerializer):
 
@@ -53,8 +55,8 @@ class ArtistSerializer(serializers.ModelSerializer):
 class KnownArtistSerializer(serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(read_only=True, source='artist')
-    name = serializers.SlugRelatedField(slug_field='name', source='artist',
-                                        queryset=GeneralArtist.objects.all())
+    name = fields.CharRelatedField(slug_field='name', source='artist',
+                                   queryset=GeneralArtist.objects.all())
     url = serializers.HyperlinkedRelatedField(read_only=True, source='artist',
                                               view_name='artist-detail')
     user = serializers.PrimaryKeyRelatedField(

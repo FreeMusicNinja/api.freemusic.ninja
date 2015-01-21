@@ -254,6 +254,12 @@ class TestKnownArtists(APITestCase):
                 reverse('artist-detail', kwargs={'pk': self.discovered_artist.pk})),
         }
 
+    def test_add_new_known_artist(self):
+        new_artist_name = "Kristin Hersh"
+        post_response = self.client.post(self.url, {'name': new_artist_name})
+        assert post_response.status_code == status.HTTP_201_CREATED, post_response.data
+        assert post_response.data['name'] == new_artist_name
+
     def test_delete_known_artist(self):
         url = reverse('knownartist-detail', kwargs={'artist': self.known_artist.pk})
         delete_response = self.client.delete(url)
