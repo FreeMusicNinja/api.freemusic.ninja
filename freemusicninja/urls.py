@@ -1,18 +1,21 @@
 from django.conf.urls import include, url
 from django.contrib import admin
-from rest_framework.routers import DefaultRouter
+from rest_framework import routers
 
 from artists import views
 from users.views import UserViewSet
 
-router = DefaultRouter()
+router = routers.DefaultRouter()
 router.register(r'artists', views.ArtistViewSet)
 router.register(r'users', UserViewSet)
 router.register(r'similar', views.SimilarViewSet)
-router.register(r'knownartists', views.KnownArtistViewSet)
+
+user_router = routers.SimpleRouter()
+user_router.register(r'knownartists', views.KnownArtistViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
+    url(r'^users/me/', include(user_router.urls)),
     url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
     url(r'^api-token-auth/',
