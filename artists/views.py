@@ -2,8 +2,8 @@ from rest_framework import permissions, viewsets
 
 from similarities.utils import get_similar
 from .models import Artist
-from similarities.models import UserSimilarity
-from .serializers import ArtistSerializer, SimilaritySerializer
+from similarities.models import UserSimilarity, KnownArtist
+from .serializers import ArtistSerializer, SimilaritySerializer, KnownArtistSerializer
 from bandcamp import tasks as bandcamp_tasks
 
 MIN_TRACKS_SIGNIFICANT = 3
@@ -33,6 +33,21 @@ class ArtistViewSet(viewsets.ModelViewSet):
         else:
             qs = super().get_queryset()
         return qs[:self.limit]
+
+
+class KnownArtistViewSet(viewsets.ModelViewSet):
+
+    """Endpoint for users to manage a list of known artists."""
+
+    lookup_field = 'artist'
+    queryset = KnownArtist.objects.all()
+    serializer_class = KnownArtistSerializer
+
+    def get_queryset(self):
+        return self.request.user.knownartist_set
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class SimilarViewSet(viewsets.ModelViewSet):
