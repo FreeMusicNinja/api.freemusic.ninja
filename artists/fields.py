@@ -8,10 +8,9 @@ class CharRelatedField(relations.RelatedField):
         'invalid': 'Invalid value.',
     }
 
-    def __init__(self, slug_field=None, **kwargs):
-        assert slug_field is not None, 'The `slug_field` argument is required.'
+    def __init__(self, slug_field, **kwargs):
         self.slug_field = slug_field
-        super(CharRelatedField, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def to_internal_value(self, data):
         try:
