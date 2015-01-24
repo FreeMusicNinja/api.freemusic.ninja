@@ -11,7 +11,7 @@ router.register(r'users', UserViewSet)
 router.register(r'similar', views.SimilarViewSet)
 
 user_router = routers.SimpleRouter()
-user_router.register(r'knownartists', views.KnownArtistViewSet)
+user_router.register(r'known-artists', views.KnownArtistViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
