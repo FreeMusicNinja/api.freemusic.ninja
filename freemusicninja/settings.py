@@ -47,6 +47,7 @@ INSTALLED_APPS = (
 
     'corsheaders',
     'djangosecure',
+    'oauth2_provider',
     'raven.contrib.django.raven_compat',
     'relatives',
     'rest_framework',
@@ -110,6 +111,7 @@ AUTH_USER_MODEL = 'users.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),

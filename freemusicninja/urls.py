@@ -16,6 +16,7 @@ user_router.register(r'known-artists', views.KnownArtistViewSet)
 urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^users/me/', include(user_router.urls)),
+    url(r'^oauth2/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
     url(r'^api-token-auth/',
