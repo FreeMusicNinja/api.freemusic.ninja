@@ -4,6 +4,10 @@ from model_utils.models import TimeStampedModel
 
 from artists import models as artists_models
 
+NON_CC_LICENSES = [
+    "FMA-Limited: Download Only",
+]
+
 
 class Genre(TimeStampedModel):
     id = models.IntegerField(primary_key=True)
@@ -47,12 +51,22 @@ class Artist(TimeStampedModel):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         # crude updating of known artists and hyperlinks
-        artist, _ = artists_models.Artist.objects.get_or_create(name=self.name)
-        link, _ = artists_models.Hyperlink.objects.update_or_create(
-            artist=artist,
-            name='fma',
-            defaults={'order': 40, 'url': self.url, 'num_tracks': self.track_set.count()},
-        )
+        if self.track_set.exclude(license_title__in=NON_CC_LICENSES).exists():
+            artist, _ = artists_models.Artist.objects.get_or_create(name=self.name)
+            link, _ = artists_models.Hyperlink.objects.update_or_create(
+                artist=artist,
+                name='fma',
+                defaults={'order': 40, 'url': self.url, 'num_tracks': self.track_set.count()},
+            )
+        else:
+            try:
+                artist = artists_models.Artist.objects.get(name=self.name)
+            except artists_models.Artist.DoesNotExist:
+                pass
+            else:
+                artists_models.Hyperlink.objects.filter(artist=artist, name='fma').delete()
+                if not artists_models.Hyperlink.objects.filter(artist=artist):
+                    artist.delete()
 
     def __str__(self):
         return self.name
