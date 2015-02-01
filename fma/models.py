@@ -51,12 +51,13 @@ class Artist(TimeStampedModel):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         # crude updating of known artists and hyperlinks
-        if self.track_set.exclude(license_title__in=NON_CC_LICENSES).exists():
+        cc_tracks = self.track_set.exclude(license_title__in=NON_CC_LICENSES)
+        if cc_tracks.exists():
             artist, _ = artists_models.Artist.objects.get_or_create(name=self.name)
             link, _ = artists_models.Hyperlink.objects.update_or_create(
                 artist=artist,
                 name='fma',
-                defaults={'order': 40, 'url': self.url, 'num_tracks': self.track_set.count()},
+                defaults={'order': 40, 'url': self.url, 'num_tracks': cc_tracks.count()},
             )
         else:
             try:
